@@ -1,0 +1,3 @@
+/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/CMakeFiles/rebuild_cache.dir
+/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/CMakeFiles/Kondo_Heisenberg.dir
+/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/CMakeFiles/edit_cache.dir
