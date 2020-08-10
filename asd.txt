@@ -1,7 +1,7 @@
 Experiment parameters: 
   L = 4
   t00 = 1
-  U = 1
+  U = 1f
   K = 1
   Jh = 1
   Mu = 0
