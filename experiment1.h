@@ -234,8 +234,8 @@ namespace Experiment1
         printfln("-------------------------------------DMRG---------------------------------");
         time0 = clock();
 
-        //dmrg(psi,H,sweeps,{"Silent",false});
-        dmrg(psi,H,sweeps);
+        dmrg(psi,H,sweeps,{"Silent",false});
+        //dmrg(psi,H,sweeps);
         printfln("-------------------------------------DATA---------------------------------");
         std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
         std::cout << "  N: " << calculateN(sites, psi) << std::endl;
