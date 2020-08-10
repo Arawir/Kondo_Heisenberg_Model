@@ -60,14 +60,14 @@ namespace itensor {
 
         IndexVal state(std::string const& state)
         {
-            if(state == "0" || state == "0_U"){ return s(1); }
-            else if(state == "1" || state == "0_D"){ return s(2); }
-            else if(state == "2" || state == "U_U"){ return s(3); }
-            else if(state == "3" || state == "U_D"){ return s(4); }
-            else if(state == "4" || state == "D_U"){ return s(5); }
-            else if(state == "5" || state == "D_D"){ return s(6); }
-            else if(state == "6" || state == "UD_U"){ return s(7); }
-            else if(state == "7" || state == "UD_D"){ return s(8); }
+            if(state == "0" || state == "0u"){ return s(1); }
+            else if(state == "1" || state == "0d"){ return s(2); }
+            else if(state == "2" || state == "uu"){ return s(3); }
+            else if(state == "3" || state == "ud"){ return s(4); }
+            else if(state == "4" || state == "du"){ return s(5); }
+            else if(state == "5" || state == "dd"){ return s(6); }
+            else if(state == "6" || state == "Du"){ return s(7); }
+            else if(state == "7" || state == "Dd"){ return s(8); }
             else {
                 Error("State " + state + " not recognized");
             }

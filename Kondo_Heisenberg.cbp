@@ -98,6 +98,9 @@
 		<Unit filename="/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/operators.h">
 			<Option target="Kondo_Heisenberg"/>
 		</Unit>
+		<Unit filename="/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/parser.h">
+			<Option target="Kondo_Heisenberg"/>
+		</Unit>
 		<Unit filename="/home/maciej/IKW_IM/PRAKTYKI_PWR/Kondo_Heisenberg/tdvp.h">
 			<Option target="Kondo_Heisenberg"/>
 		</Unit>

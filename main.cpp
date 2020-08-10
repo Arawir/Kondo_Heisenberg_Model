@@ -3,8 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-    Experiment1::readExperimentParameters(argc,argv);
-    Experiment1::writeExperimentParameters();
+    readExperimentParameters(argc,argv);
+    writeExperimentParameters();
     Experiment1::run();
 
     return 0;

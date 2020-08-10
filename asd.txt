@@ -1,7 +1,7 @@
 Experiment parameters: 
   L = 4
   t00 = 1
-  U = 1f
+  U = 1
   K = 1
   Jh = 1
   Mu = 0
@@ -18,7 +18,7 @@ Experiment parameters:
   Sz_0: 0
   Sz_1: 0
   Sz_01: 0
-  Time: 0.033636 [s]
+  Time: 0.040909 [s]
 -------------------------------------DMRG---------------------------------
 Sweep=1, HS=1, Bond=1/3
 I 0 q 2E+00 E 1.2500000000
@@ -56,7 +56,7 @@ I 10 q 5E-04 E -5.6596994020
     Largest link dim during sweep 1/4 was 57
     Largest truncation error: 6.634e-07
     Energy after sweep 1/4 is -5.659699402046
-    Sweep 1/4 CPU time = 0.314s (Wall time = 0.315s)
+    Sweep 1/4 CPU time = 0.311s (Wall time = 0.315s)
 Sweep=2, HS=1, Bond=1/3
 I 0 q 5E-04 E -5.6596994020
 I 10 q 1E-05 E -5.6596994832
@@ -93,7 +93,7 @@ I 10 q 2E-07 E -5.6597003242
     Largest link dim during sweep 2/4 was 57
     Largest truncation error: 3.35185e-07
     Energy after sweep 2/4 is -5.659700324178
-    Sweep 2/4 CPU time = 0.520s (Wall time = 0.520s)
+    Sweep 2/4 CPU time = 0.516s (Wall time = 0.524s)
 Sweep=3, HS=1, Bond=1/3
 I 0 q 2E-07 E -5.6597003242
 I 10 q 4E-10 E -5.6597003242
@@ -130,7 +130,7 @@ I 10 q 2E-07 E -5.6597003242
     Largest link dim during sweep 3/4 was 57
     Largest truncation error: 3.35171e-07
     Energy after sweep 3/4 is -5.659700324178
-    Sweep 3/4 CPU time = 0.530s (Wall time = 0.530s)
+    Sweep 3/4 CPU time = 0.520s (Wall time = 0.524s)
 Sweep=4, HS=1, Bond=1/3
 I 0 q 2E-07 E -5.6597003242
 I 10 q 1E-10 E -5.6597003242
@@ -167,7 +167,7 @@ I 10 q 2E-07 E -5.6597003242
     Largest link dim during sweep 4/4 was 57
     Largest truncation error: 3.35171e-07
     Energy after sweep 4/4 is -5.659700324178
-    Sweep 4/4 CPU time = 0.524s (Wall time = 0.528s)
+    Sweep 4/4 CPU time = 0.547s (Wall time = 0.551s)
 -------------------------------------DATA---------------------------------
   Energy after DMRG: -5.6597
   N: 4
@@ -175,4 +175,4 @@ I 10 q 2E-07 E -5.6597003242
   Sz_0: -1.07011e-16
   Sz_1: -8.89588e-17
   Sz_01: -9.2632e-18
-  Time: 1.91986 [s]
+  Time: 1.9416 [s]

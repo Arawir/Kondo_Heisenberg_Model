@@ -9,6 +9,7 @@ set(HEADERS
     tdvp.h
     operators.h
     experiment1.h
+    parser.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})

@@ -5,5 +5,6 @@ CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: experiment1.h
 CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: kondo_heisenberg.h
 CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: main.cpp
 CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: operators.h
+CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: parser.h
 CMakeFiles/Kondo_Heisenberg.dir/main.cpp.o: tdvp.h
 
