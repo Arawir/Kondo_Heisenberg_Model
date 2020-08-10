@@ -215,7 +215,7 @@ namespace Experiment1
         std::cout << "  Only DMRG" << std::endl;
 
         printfln("-------------------------------------PREAPRE OBJECTS----------------------");
-        clock_t  time0 = clock();
+        clock_t time0 = clock();
 
         seedRNG(1);
         auto sites = KondoHeisenberg(L);
@@ -234,7 +234,9 @@ namespace Experiment1
         printfln("-------------------------------------DMRG---------------------------------");
         time0 = clock();
 
-        dmrg(psi,H,sweeps,{"Silent",true});
+        //dmrg(psi,H,sweeps,{"Silent",false});
+        dmrg(psi,H,sweeps);
+        printfln("-------------------------------------DATA---------------------------------");
         std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
         std::cout << "  N: " << calculateN(sites, psi) << std::endl;
         std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;

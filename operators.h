@@ -101,5 +101,16 @@ double calculateCorrelationSz1(const BasicSiteSet<KondoHeisenbergSite> &sites, c
     return inner(psi,SziSzj,psi);
 }
 
+double calculateMagnetizationSz(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
+{
+    auto N = AutoMPO(sites);
+
+    for(int i=1; i<=psi.length(); i++){
+        N += 1,"sz_01",i;
+    }
+
+    return inner(psi,toMPO(N),psi);
+}
+
 #endif // OPERATORS
 
