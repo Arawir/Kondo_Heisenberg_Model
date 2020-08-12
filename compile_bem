@@ -1,7 +1,6 @@
-#PBS -S /bin/bash
-#PBS -q main
-#PBS -l walltime=0:10:00
-#PBS -l select=1:ncpus=1:mem=6GB
+#!/bin/bash -l        
+#PBS -l walltime=8:00:00,select=1:ncpus=1:mem=6gb 
+
 ITENSOR_V3_PATH='/home/marmac96/itensor'
 module load gcc/7.3.0
 module load lapack
