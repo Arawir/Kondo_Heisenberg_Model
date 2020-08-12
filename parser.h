@@ -35,7 +35,7 @@ std::vector<std::string> parseInitState(std::string str)
            state.push_back("ud");
            state.push_back("du");
         }
-    }else if(state.size()<L){
+    }else if(state.size()<(uint)L){
         uint templateLength = state.size()-1;
         std::cout << "Init state deduced" << std::endl;
         for(int i=state.size()-1; i<L; i++){
