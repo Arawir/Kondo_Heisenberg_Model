@@ -8,7 +8,6 @@ set(HEADERS
     kondo_heisenberg.h
     tdvp.h
     operators.h
-    experiment1.h
     parser.h
 )
 

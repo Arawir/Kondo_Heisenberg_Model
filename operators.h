@@ -7,6 +7,60 @@
 
 using namespace itensor;
 
+MPO prepareHamiltonian(BasicSiteSet<KondoHeisenbergSite> &sites)
+{
+    double t00 = Args::global().getReal("t00",0);
+    double K = Args::global().getReal("K",0);
+    double U = Args::global().getReal("U",0);
+    double Jh = Args::global().getReal("Jh",0);
+    double Mu = Args::global().getReal("Mu",0);
+    int L = Args::global().getInt("L",4);
+
+    auto ampo = AutoMPO(sites);
+    for(int j=1; j<L; j++){
+        ampo += t00,"cT_0,u",j,"c_0,u",j+1;
+        ampo += t00,"c_0,u",j,"cT_0,u",j+1;
+        ampo += t00,"cT_0,d",j,"c_0,d",j+1;
+        ampo += t00,"c_0,d",j,"cT_0,d",j+1;
+
+        ampo += K/2,"s+_1",j,"s-_1",j+1;
+        ampo += K/2,"s-_1",j,"s+_1",j+1;
+        ampo += K,"sz_1",j,"sz_1",j+1;
+    }
+
+    if(Args::global().getBool("PBC",0)){
+        ampo += t00,"cT_0,u",L,"c_0,u",1;
+        ampo += t00,"c_0,u",L,"cT_0,u",1;
+        ampo += t00,"cT_0,d",L,"c_0,d",1;
+        ampo += t00,"c_0,d",L,"cT_0,d",1;
+
+        ampo += K/2,"s+_1",L,"s-_1",1;
+        ampo += K/2,"s-_1",L,"s+_1",1;
+        ampo += K,"sz_1",L,"sz_1",1;
+    }
+
+    for(int j=1; j<=L; j++){
+        ampo += U,"nD",j;
+        ampo += -2.0*Jh,"s_01",j;
+        ampo += Mu,"n",j;
+    }
+
+    return toMPO(ampo);
+}
+
+
+
+Sweeps prepareSweepClass()
+{
+    auto sweeps = Sweeps(Args::global().getInt("sweeps",4));
+    sweeps.maxdim() = Args::global().getInt("maxDim",100);
+    sweeps.mindim() = Args::global().getInt("maxDim",1);
+    sweeps.cutoff() = Args::global().getReal("cutoff",1E-6);
+    sweeps.niter() = 10;
+    return sweeps;
+}
+
+
 double calculateN(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
 {
     auto N = AutoMPO(sites);

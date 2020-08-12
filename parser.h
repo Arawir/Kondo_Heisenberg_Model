@@ -11,12 +11,6 @@
 
 #include "operators.h"
 
-typedef std::complex<double> cpx;
-#define im std::complex<double>{0.0,1.0}
-
-
-
-
 std::vector<std::string> parseInitState(std::string str)
 {
     int L = Args::global().getInt("L");
