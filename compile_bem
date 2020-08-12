@@ -11,4 +11,4 @@ cd $PBS_O_WORKDIR
 
 ITENSOR_V3_PATH='/home/marmac96/itensor'
 
-g++ main.cpp -o kondo_heisenberg_model -m64 -std=c++17 -fconcepts -fPIC -I '/home/marmac96/itensor' -O2 -DNDEBUG -Wall -Wno-unknown-pragmas -Wno-unused-variable -L'/home/marmac96/itensor/lib' -litensor -lpthread -L/usr/lib -lblas -llapack
+g++ main.cpp -o kondo_heisenberg_model -m64 -std=c++17 -fconcepts -fPIC -I '/home/marmac96/itensor' -O2 -DNDEBUG -Wall -Wno-unknown-pragmas -Wno-unused-variable -L'/home/marmac96/itensor/lib' -litensor -L/usr/lib -lblas -llapack -lpthread -lm -lc
