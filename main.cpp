@@ -18,8 +18,8 @@ void exp1()
     std::cout << "  Energy of initial state: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz_0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz_1(sites, psi) << std::endl;
+    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
     std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
     std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 
@@ -31,8 +31,8 @@ void exp1()
     std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz_0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz_1(sites, psi) << std::endl;
+    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
     std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
     std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 }
@@ -87,8 +87,8 @@ void exp3()
     std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz_0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz_1(sites, psi) << std::endl;
+    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
     std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
     calculateCorrelationMatrixSz(sites,psi,"0");
     calculateCorrelationMatrixSz(sites,psi,"1");

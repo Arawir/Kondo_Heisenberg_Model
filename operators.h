@@ -18,30 +18,30 @@ MPO prepareHamiltonian(BasicSiteSet<KondoHeisenbergSite> &sites)
 
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
-        ampo += t00,"cT_0,u",j,"c_0,u",j+1;
-        ampo += t00,"c_0,u",j,"cT_0,u",j+1;
-        ampo += t00,"cT_0,d",j,"c_0,d",j+1;
-        ampo += t00,"c_0,d",j,"cT_0,d",j+1;
+        ampo += t00,"cdagup",j,"cup",j+1;
+        ampo += t00,"cup",j,"cdagup",j+1;
+        ampo += t00,"cdagdn",j,"cdn",j+1;
+        ampo += t00,"cdn",j,"cdagdn",j+1;
 
-        ampo += K/2,"s+_1",j,"s-_1",j+1;
-        ampo += K/2,"s-_1",j,"s+_1",j+1;
-        ampo += K,"sz_1",j,"sz_1",j+1;
+        ampo += K/2,"splus1",j,"sminus1",j+1;
+        ampo += K/2,"sminus1",j,"splus1",j+1;
+        ampo += K,"sz1",j,"sz1",j+1;
     }
 
     if(Args::global().getBool("PBC",0)){
-        ampo += t00,"cT_0,u",L,"c_0,u",1;
-        ampo += t00,"c_0,u",L,"cT_0,u",1;
-        ampo += t00,"cT_0,d",L,"c_0,d",1;
-        ampo += t00,"c_0,d",L,"cT_0,d",1;
+        ampo += t00,"cdagup",L,"cup",1;
+        ampo += t00,"cup",L,"cdagup",1;
+        ampo += t00,"cdagdn",L,"cdn",1;
+        ampo += t00,"cdn",L,"cdagdn",1;
 
-        ampo += K/2,"s+_1",L,"s-_1",1;
-        ampo += K/2,"s-_1",L,"s+_1",1;
-        ampo += K,"sz_1",L,"sz_1",1;
+        ampo += K/2,"splus1",L,"sminus1",1;
+        ampo += K/2,"sminus1",L,"splus1",1;
+        ampo += K,"sz1",L,"sz1",1;
     }
 
     for(int j=1; j<=L; j++){
         ampo += U,"nD",j;
-        ampo += -2.0*Jh,"s_01",j;
+        ampo += -2.0*Jh,"shund",j;
         ampo += Mu,"n",j;
     }
 
@@ -77,29 +77,29 @@ double calculateNd(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &ps
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"nd_01",i;
+        N += 1,"nD",i;
     }
 
     return inner(psi,toMPO(N),psi);
 }
 
-double calculateSz_0(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
+double calculateSz0(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
 {
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"sz_0",i;
+        N += 1,"sz0",i;
     }
 
     return inner(psi,toMPO(N),psi);
 }
 
-double calculateSz_1(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
+double calculateSz1(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
 {
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"sz_1",i;
+        N += 1,"sz1",i;
     }
 
     return inner(psi,toMPO(N),psi);
@@ -110,7 +110,7 @@ double calculateSz_01(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS 
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"sz_01",i;
+        N += 1,"szhund",i;
     }
 
     return inner(psi,toMPO(N),psi);
@@ -121,8 +121,8 @@ double calculateCorrelationSz01(const BasicSiteSet<KondoHeisenbergSite> &sites, 
     auto Sz_i = AutoMPO(sites);
     auto Sz_j = AutoMPO(sites);
 
-    Sz_i += 1,"sz_01",i;
-    Sz_j += 1,"sz_01",j;
+    Sz_i += 1,"szhund",i;
+    Sz_j += 1,"szhund",j;
 
     MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
 
@@ -134,8 +134,8 @@ double calculateCorrelationSz0(const BasicSiteSet<KondoHeisenbergSite> &sites, c
     auto Sz_i = AutoMPO(sites);
     auto Sz_j = AutoMPO(sites);
 
-    Sz_i += 1,"sz_0",i;
-    Sz_j += 1,"sz_0",j;
+    Sz_i += 1,"sz0",i;
+    Sz_j += 1,"sz0",j;
 
     MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
 
@@ -147,8 +147,8 @@ double calculateCorrelationSz1(const BasicSiteSet<KondoHeisenbergSite> &sites, c
     auto Sz_i = AutoMPO(sites);
     auto Sz_j = AutoMPO(sites);
 
-    Sz_i += 1,"sz_1",i;
-    Sz_j += 1,"sz_1",j;
+    Sz_i += 1,"sz1",i;
+    Sz_j += 1,"sz1",j;
 
     MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
 
@@ -160,7 +160,7 @@ double calculateMagnetizationSz(const BasicSiteSet<KondoHeisenbergSite> &sites, 
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"sz_01",i;
+        N += 1,"szhund",i;
     }
 
     return inner(psi,toMPO(N),psi);

@@ -26,13 +26,13 @@ namespace itensor {
              auto conserveN = args.getBool("ConserveN",false);
 
              if(conserveSz && conserveN){
-                 s = Index{ QN( {"Sz=", +1 }, {"Nf=",0} ),1,  //0u
-                            QN( {"Sz=", -1 }, {"Nf=",0} ),1,  //0d
-                            QN( {"Sz=", +2 }, {"Nf=",1} ),1,  //uu
-                            QN( {"Sz=", +0 }, {"Nf=",1} ),2,  //ud du
-                            QN( {"Sz=", -2 }, {"Nf=",1} ),1,  //dd
-                            QN( {"Sz=", +1 }, {"Nf=",2} ),1,  //Du
-                            QN( {"Sz=", -1 }, {"Nf=",2} ),1,  //Dd
+                 s = Index{ QN( {"Sz=", +1 }, {"N=",0} ),1,  //0u
+                            QN( {"Sz=", -1 }, {"N=",0} ),1,  //0d
+                            QN( {"Sz=", +2 }, {"N=",1} ),1,  //uu
+                            QN( {"Sz=", +0 }, {"N=",1} ),2,  //ud du
+                            QN( {"Sz=", -2 }, {"N=",1} ),1,  //dd
+                            QN( {"Sz=", +1 }, {"N=",2} ),1,  //Du
+                            QN( {"Sz=", -1 }, {"N=",2} ),1,  //Dd
                             Out, ts};
              } else if(conserveSz && (!conserveN)){
                  s = Index{ QN( {"Sz=", +1 } ),1,  //0u
@@ -44,9 +44,9 @@ namespace itensor {
                             QN( {"Sz=", -1 } ),1,  //Dd
                             Out, ts};
              } else if((!conserveSz) && conserveN){
-                 s = Index{ QN( {"Nf=",0} ),2,  //0u 0d
-                            QN( {"Nf=",1} ),4,  //uu ud du dd
-                            QN( {"Nf=",2} ),2,  //Du Dd
+                 s = Index{ QN( {"N=",0} ),2,  //0u 0d
+                            QN( {"N=",1} ),4,  //uu ud du dd
+                            QN( {"N=",2} ),2,  //Du Dd
                             Out, ts};
              } else {
                 s = Index{ 8,ts};
@@ -82,22 +82,22 @@ namespace itensor {
 
             auto Op = ITensor{ dag(s),sP };
 
-            if(opname == "c_0,u"){
+            if(opname == "cup"){
                 Op.set(s(1),sP(3),1);
                 Op.set(s(2),sP(4),1);
                 Op.set(s(5),sP(7),-1);
                 Op.set(s(6),sP(8),-1);
-            } else if(opname == "cT_0,u"){
+            } else if(opname == "cdagup"){
                 Op.set(s(3),sP(1),1);
                 Op.set(s(4),sP(2),1);
                 Op.set(s(7),sP(5),-1);
                 Op.set(s(8),sP(6),-1);
-            } else if(opname == "c_0,d"){
+            } else if(opname == "cdn"){
                 Op.set(s(1),sP(5),1);
                 Op.set(s(2),sP(6),1);
                 Op.set(s(3),sP(7),-1);
                 Op.set(s(4),sP(8),-1);
-            } else if(opname == "cT_0,d"){
+            } else if(opname == "cdagdn"){
                 Op.set(s(5),sP(1),1);
                 Op.set(s(6),sP(2),1);
                 Op.set(s(7),sP(3),-1);
@@ -115,17 +115,17 @@ namespace itensor {
                 Op.set(s(7),sP(7),2);
                 Op.set(s(8),sP(8),2);
 
-            } else if(opname == "s+_1"){
+            } else if(opname == "splus1"){
                 Op.set(s(1),sP(2),1);
                 Op.set(s(3),sP(4),1);
                 Op.set(s(5),sP(6),1);
                 Op.set(s(7),sP(8),1);
-            } else if(opname == "s-_1"){
+            } else if(opname == "sminus1"){
                 Op.set(s(2),sP(1),1);
                 Op.set(s(4),sP(3),1);
                 Op.set(s(6),sP(5),1);
                 Op.set(s(8),sP(7),1);
-            } else if(opname == "sz_1"){
+            } else if(opname == "sz1"){
                 Op.set(s(1),sP(1),0.5);
                 Op.set(s(3),sP(3),0.5);
                 Op.set(s(5),sP(5),0.5);
@@ -135,13 +135,13 @@ namespace itensor {
                 Op.set(s(6),sP(6),-0.5);
                 Op.set(s(8),sP(8),-0.5);
 
-            } else if(opname == "sz_0"){
+            } else if(opname == "sz0"){
                 Op.set(s(3),sP(3),0.5);
                 Op.set(s(4),sP(4),0.5);
                 Op.set(s(5),sP(5),-0.5);
                 Op.set(s(6),sP(6),-0.5);
 
-            } else if(opname == "sz_01"){
+            } else if(opname == "szhund"){
                 Op.set(s(1),sP(1),0.5);
                 Op.set(s(2),sP(2),-0.5);
                 Op.set(s(3),sP(3),1.0);
@@ -149,27 +149,13 @@ namespace itensor {
                 Op.set(s(7),sP(7),0.5);
                 Op.set(s(8),sP(8),-0.5);
 
-            } else if(opname == "s_01"){
+            } else if(opname == "shund"){
                 Op.set(s(3),sP(3),0.25);
                 Op.set(s(6),sP(6),0.25);
                 Op.set(s(4),sP(5),0.5);
                 Op.set(s(5),sP(4),0.5);
-                Op.set(s(4),sP(4),-0.25);  //-0.25
-                Op.set(s(5),sP(5),-0.25);  //-0.25
-
-            } else if(opname == "n_01"){
-                Op.set(s(1),sP(1), 1);
-                Op.set(s(2),sP(2), 1);
-                Op.set(s(3),sP(3), 2);
-                Op.set(s(4),sP(4), 2);
-                Op.set(s(5),sP(5), 2);
-                Op.set(s(6),sP(6), 2);
-                Op.set(s(7),sP(7), 3);
-                Op.set(s(8),sP(8), 3);
-
-            } else if(opname == "nd_01"){
-                Op.set(s(7),sP(7), 1);
-                Op.set(s(8),sP(8), 1);
+                Op.set(s(4),sP(4),-0.25);
+                Op.set(s(5),sP(5),-0.25);
 
             } else {
                 Error("Operator \"" + opname + "\" name not recognized");
