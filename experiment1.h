@@ -38,35 +38,15 @@ namespace Experiment1
         }
 
         for(int j=1; j<=L; j++){
-            ampo += U,"n_0,ud",j;
+            ampo += U,"nD",j;
             ampo += -2.0*Jh,"s_01",j;
-            ampo += Mu,"n_01",j;
+            ampo += Mu,"n",j;
         }
 
         return toMPO(ampo);
     }
 
-    void calculateCorrelationMatrixSz(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi, std::string type)
-    {
-        int L = Args::global().getInt("L");
 
-        if(type=="0"){ std::cout << "Correlation matrix <Sz0_i Sz0_j>" << std::endl; }
-        if(type=="1"){ std::cout << "Correlation matrix <Sz1_i Sz1_j>" << std::endl; }
-        if(type=="01"){ std::cout << "Correlation matrix <Sz01_i Sz01_j>" << std::endl; }
-        for(int i=1; i<=L; i++){
-            std::cout << "  ";
-            std::cout.width(3);
-            std::cout << i << " | ";
-            for(int j=1; j<=L; j++){
-                std::cout.width(8);
-                std::cout.precision(4);
-                if(type=="0"){ std::cout << std::fixed << calculateCorrelationSz0(sites,psi,i,j) << " | "; }
-                if(type=="1"){ std::cout << std::fixed << calculateCorrelationSz1(sites,psi,i,j) << " | "; }
-                if(type=="01"){ std::cout << std::fixed << calculateCorrelationSz01(sites,psi,i,j) << " | "; }
-            }
-            std::cout << std::endl;
-        }
-    }
 
     Sweeps prepareSweepClass()
     {

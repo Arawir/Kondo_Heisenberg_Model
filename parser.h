@@ -14,6 +14,9 @@
 typedef std::complex<double> cpx;
 #define im std::complex<double>{0.0,1.0}
 
+
+
+
 std::vector<std::string> parseInitState(std::string str)
 {
     int L = Args::global().getInt("L");
@@ -137,9 +140,19 @@ void setParam(bool &val, std::string argv)
     }
 }
 
-
-
-
+std::string convertInitStateString(std::string initState)
+{
+    if(initState.back()=='\0'){ initState.pop_back(); }
+    if(initState=="0") return "0u"; //1
+    if(initState=="1") return "0d"; //2
+    if(initState=="2") return "uu"; //3
+    if(initState=="3") return "ud"; //4
+    if(initState=="4") return "du"; //5
+    if(initState=="5") return "dd"; //6
+    if(initState=="6") return "Du";//7
+    if(initState=="7") return "Dd";//8
+    return initState;
+}
 
 void readExperimentParameters(int argc, char *argv[])
 {
@@ -165,22 +178,6 @@ void readExperimentParameters(int argc, char *argv[])
             std::cerr << "WARNING: unknown argument (" << argv[i] << ")" << std::endl;
         }
     }
-
-
-}
-
-std::string convertInitStateString(std::string initState)
-{
-    if(initState.back()=='\0'){ initState.pop_back(); }
-    if(initState=="0") return "0u"; //1
-    if(initState=="1") return "0d"; //2
-    if(initState=="2") return "uu"; //3
-    if(initState=="3") return "ud"; //4
-    if(initState=="4") return "du"; //5
-    if(initState=="5") return "dd"; //6
-    if(initState=="6") return "Du";//7
-    if(initState=="7") return "Dd";//8
-    return initState;
 }
 
 void writeExperimentParameters()

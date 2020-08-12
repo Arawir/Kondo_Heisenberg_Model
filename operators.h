@@ -12,7 +12,7 @@ double calculateN(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"n_0",i;
+        N += 1,"n",i;
     }
 
     return inner(psi,toMPO(N),psi);
@@ -110,6 +110,28 @@ double calculateMagnetizationSz(const BasicSiteSet<KondoHeisenbergSite> &sites, 
     }
 
     return inner(psi,toMPO(N),psi);
+}
+
+void calculateCorrelationMatrixSz(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi, std::string type)
+{
+    int L = Args::global().getInt("L");
+
+    if(type=="0"){ std::cout << "Correlation matrix <Sz0_i Sz0_j>" << std::endl; }
+    if(type=="1"){ std::cout << "Correlation matrix <Sz1_i Sz1_j>" << std::endl; }
+    if(type=="01"){ std::cout << "Correlation matrix <Sz01_i Sz01_j>" << std::endl; }
+    for(int i=1; i<=L; i++){
+        std::cout << "  ";
+        std::cout.width(3);
+        std::cout << i << " | ";
+        for(int j=1; j<=L; j++){
+            std::cout.width(8);
+            std::cout.precision(4);
+            if(type=="0"){ std::cout << std::fixed << calculateCorrelationSz0(sites,psi,i,j) << " | "; }
+            if(type=="1"){ std::cout << std::fixed << calculateCorrelationSz1(sites,psi,i,j) << " | "; }
+            if(type=="01"){ std::cout << std::fixed << calculateCorrelationSz01(sites,psi,i,j) << " | "; }
+        }
+        std::cout << std::endl;
+    }
 }
 
 #endif // OPERATORS

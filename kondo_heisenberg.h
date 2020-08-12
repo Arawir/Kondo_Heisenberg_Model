@@ -26,27 +26,27 @@ namespace itensor {
              auto conserveN = args.getBool("ConserveN",false);
 
              if(conserveSz && conserveN){
-                 s = Index{ QN( {"Sz=", +1 }, {"Nf=",0} ),1,  //0_u
-                            QN( {"Sz=", -1 }, {"Nf=",0} ),1,  //0_d
-                            QN( {"Sz=", +2 }, {"Nf=",1} ),1,  //u_u
-                            QN( {"Sz=", +0 }, {"Nf=",1} ),2,  //u_d d_u
-                            QN( {"Sz=", -2 }, {"Nf=",1} ),1,  //d_d
-                            QN( {"Sz=", +1 }, {"Nf=",2} ),1,  //ud_u
-                            QN( {"Sz=", -1 }, {"Nf=",2} ),1,  //ud_d
+                 s = Index{ QN( {"Sz=", +1 }, {"Nf=",0} ),1,  //0u
+                            QN( {"Sz=", -1 }, {"Nf=",0} ),1,  //0d
+                            QN( {"Sz=", +2 }, {"Nf=",1} ),1,  //uu
+                            QN( {"Sz=", +0 }, {"Nf=",1} ),2,  //ud du
+                            QN( {"Sz=", -2 }, {"Nf=",1} ),1,  //dd
+                            QN( {"Sz=", +1 }, {"Nf=",2} ),1,  //Du
+                            QN( {"Sz=", -1 }, {"Nf=",2} ),1,  //Dd
                             Out, ts};
              } else if(conserveSz && (!conserveN)){
-                 s = Index{ QN( {"Sz=", +1 } ),1,  //0_u
-                            QN( {"Sz=", -1 } ),1,  //0_d
-                            QN( {"Sz=", +2 } ),1,  //u_u
-                            QN( {"Sz=", +0 } ),2,  //u_d d_u
-                            QN( {"Sz=", -2 } ),1,  //d_d
-                            QN( {"Sz=", +1 } ),1,  //ud_u
-                            QN( {"Sz=", -1 } ),1,  //ud_d
+                 s = Index{ QN( {"Sz=", +1 } ),1,  //0u
+                            QN( {"Sz=", -1 } ),1,  //0d
+                            QN( {"Sz=", +2 } ),1,  //uu
+                            QN( {"Sz=", +0 } ),2,  //ud du
+                            QN( {"Sz=", -2 } ),1,  //dd
+                            QN( {"Sz=", +1 } ),1,  //Du
+                            QN( {"Sz=", -1 } ),1,  //Dd
                             Out, ts};
              } else if((!conserveSz) && conserveN){
-                 s = Index{ QN( {"Nf=",0} ),2,  //0_u 0_d
-                            QN( {"Nf=",1} ),4,  //u_u u_d d_u d_d
-                            QN( {"Nf=",2} ),2,  //ud_u ud_d
+                 s = Index{ QN( {"Nf=",0} ),2,  //0u 0d
+                            QN( {"Nf=",1} ),4,  //uu ud du dd
+                            QN( {"Nf=",2} ),2,  //Du Dd
                             Out, ts};
              } else {
                 s = Index{ 8,ts};
@@ -103,11 +103,11 @@ namespace itensor {
                 Op.set(s(7),sP(3),-1);
                 Op.set(s(8),sP(4),-1);
 
-            } else if(opname == "n_0,ud"){
+            } else if(opname == "nD"){
                 Op.set(s(7),sP(7),1);
                 Op.set(s(8),sP(8),1);
 
-            } else if(opname == "n_0"){
+            } else if(opname == "n"){
                 Op.set(s(3),sP(3),1);
                 Op.set(s(4),sP(4),1);
                 Op.set(s(5),sP(5),1);
