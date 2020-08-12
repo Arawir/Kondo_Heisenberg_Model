@@ -5,8 +5,8 @@
 #PBS -l select=1:ncpus=1:mem=6GB
 cd $PBS_O_WORKDIR
 
-echo "Length: $1";
-time ./kondo_heisenberg_model t00=1 U=1 K=1 Jh=1 L=$1 exp=1 state=ud-du Silent=0 > L$1.data
+echo "Length: ${L}";
+time ./kondo_heisenberg_model t00=1 U=1 K=1 Jh=1 L=${L} exp=1 state=ud-du Silent=0 > L${L}.data
 
 qstat -f $PBS_JOBID | grep resources_used.vmem
 
