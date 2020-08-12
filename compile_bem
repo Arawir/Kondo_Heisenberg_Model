@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -l
 #PBS -q main
 #PBS -l walltime=0:10:00
 #PBS -l select=1:ncpus=1:mem=6GB
