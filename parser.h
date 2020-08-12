@@ -160,6 +160,7 @@ void readExperimentParameters(int argc, char *argv[])
         else if( paramName(argv[i]) == "minDim" ){ setParam("int", argv[i]); }
         else if( paramName(argv[i]) == "sweeps" ){ setParam("int", argv[i]); }
         else if( paramName(argv[i]) == "cutoff" ){ setParam("double", argv[i]); }
+        else if( paramName(argv[i]) == "Silent" ){ setParam("bool", argv[i]); }
         else {
             std::cerr << "WARNING: unknown argument (" << argv[i] << ")" << std::endl;
         }
