@@ -5,6 +5,7 @@
 #PBS -l select=1:ncpus=1:mem=6GB
 
 module load mkl
+module load lapack
 module load gcc/7.3.0
 
 cd $PBS_O_WORKDIR
