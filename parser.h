@@ -143,7 +143,7 @@ void setParam(bool &val, std::string argv)
 
 void readExperimentParameters(int argc, char *argv[])
 {
-    for(uint i=1; i<argc; i++){
+    for(int i=1; i<argc; i++){
         if( paramName(argv[i]) == "L" ){ setParam("int", argv[i]); }
         else if( paramName(argv[i]) == "PBC" ){ setParam("bool", argv[i]); }
         else if( paramName(argv[i]) == "t00" ){ setParam("double", argv[i]); }
