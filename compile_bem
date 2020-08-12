@@ -5,6 +5,6 @@
 #PBS -l select=1:ncpus=1:mem=6GB
 cd $PBS_O_WORKDIR
 ITENSOR_V3_PATH='/home/marmac96/itensor'
-module load gcc/7.3.0
-module load lapack
+#PBS module load gcc/7.3.0
+#PBS module load lapack
 g++ main.cpp -o kondo_heisenberg_model -m64 -std=c++17 -fconcepts -fPIC -I \'${ITENSOR_V3_PATH}\' -O2 -DNDEBUG -Wall -Wno-unknown-pragmas -Wno-unused-variable -L\'${ITENSOR_V3_PATH}/lib\' -litensor -larmadillo -lpthread -L/usr/lib -lblas -llapack
