@@ -1,12 +1,12 @@
 #PBS -S /bin/bash
 #PBS -q main
-#PBS -l walltime=00:10:00
+#PBS -l walltime=48:10:00
 
-#PBS -l select=1:ncpus=1:mem=6GB
+#PBS -l select=1:ncpus=1:mem=56GB
 cd $PBS_O_WORKDIR
 
 echo "Length: ${L}";
-time ./kondo_heisenberg_model t00=1 U=1 K=1 Jh=1 L=${L} exp=1 state=ud-du Silent=0 > L${L}.data
+time ./kondo_heisenberg_model t00=1 U=1 K=1 Jh=1 L=${L} exp=1 state=ud-du Silent=0 cutoff=1E-6 maxdim=6000 > L${L}.data
 
 qstat -f $PBS_JOBID | grep resources_used.vmem
 
