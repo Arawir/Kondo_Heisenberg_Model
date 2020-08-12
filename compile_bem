@@ -1,15 +1,12 @@
-#PBS -S /bin/bash
-#PBS -q main
-#PBS -l walltime=00:10:00
+#!/bin/bash
 
-#PBS -l select=1:ncpus=1:mem=6GB
-
-module load mkl
-module load lapack
 module load gcc/7.3.0
+module load mkl
 
-cd $PBS_O_WORKDIR
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/intel/15.0.1.133/composer_xe_2015.1.133/mkl/lib/intel64
 
-ITENSOR_V3_PATH='/home/marmac96/itensor'
+ITENSORDIR='/home/herbjace/Scratch/iTensor/itensor_single'
+MKLDIRL='/usr/local/intel/15.0.1.133/composer_xe_2015.1.133/mkl/lib/intel64/'
+MKLDIRI='/usr/local/intel/15.0.1.133/composer_xe_2015.1.133/mkl/include/'
 
-g++ main.cpp -o kondo_heisenberg_model -m64 -std=c++17 -fconcepts -fPIC -I '/home/marmac96/itensor' -O2 -DNDEBUG -Wall -Wno-unknown-pragmas -Wno-unused-variable -L'/home/marmac96/itensor/lib' -litensor -L/usr/lib -lblas -llapack -lpthread
+g++ main.cpp -o job -m64 -std=c++17 -fconcepts -fPIC -I${ITENSORDIR} -O2 -DNDEBUG -Wall -Wno-unknown-pragmas -Wno-unused-variable -L${ITENSORDIR}/lib -litensor -lmkl_intel_lp64 -lmkl_sequential -lmkl_rt -lmkl_core -lpthread -I${MKLDIRI} -L${MKLDIRL}

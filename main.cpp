@@ -3,11 +3,8 @@
 
 void exp1()
 {
-    printfln("-------------------------------------EXP1---------------------------------");
-    std::cout << "  Only DMRG" << std::endl;
-
-    printfln("-------------------------------------PREAPRE OBJECTS----------------------");
-    clock_t time0 = clock();
+    printfln("------------------------------ Initial State -----------------------------");
+    clock_t timecpu = clock();
 
     seedRNG(1);
     auto sites = KondoHeisenberg( Args::global().getInt("L") );
@@ -15,36 +12,33 @@ void exp1()
     auto H = prepareHamiltonian(sites);
     auto sweeps = prepareSweepClass();
 
-    std::cout << "  Energy of initial state: " << real(innerC(psi,H,psi)) << std::endl;
+    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
     std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
     std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
-    std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 
-    printfln("-------------------------------------DMRG---------------------------------");
-    time0 = clock();
+    printfln("------------------------- Ground State from DMRG -------------------------");
+    timecpu = clock();
 
     dmrg(psi,H,sweeps);
-    printfln("-------------------------------------DATA---------------------------------");
-    std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
+    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
     std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
     std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
-    std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 }
 
 void exp2()
 {
-    printfln("-------------------------------------EXP2---------------------------------");
-    std::cout << "  Time evolution of init state" << std::endl;
-    double t = Args::global().getReal("t");
+    double time = Args::global().getReal("time");
 
-    printfln("-------------------------------------PREAPRE OBJECTS----------------------");
-    clock_t  time0 = clock();
+    printfln("------------------------------ Initial State -----------------------------");
+    clock_t  timecpu = clock();
 
     seedRNG(1);
     auto sites = KondoHeisenberg( Args::global().getInt("L") );
@@ -52,23 +46,20 @@ void exp2()
     auto H = prepareHamiltonian(sites);
     auto sweeps = prepareSweepClass();
 
-    std::cout << "Energy of initial state: " << std::real(innerC(psi,H,psi)) << std::endl;
-    std::cout << "Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    std::cout << "Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
+    std::cout << "Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 
-    printfln("-------------------------------------TVDP in real time---------------------");
-    time0 = clock();
-    auto energy = tdvp(psi,H,-t*10.0,sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
+    printfln("------------------ TVDP time evolution from initial state ----------------");
+    timecpu = clock();
+    auto energy = tdvp(psi,H,-time*10.0,sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
     std::cout << "Energy after TVDP: " << energy << std::endl;
-    std::cout << "Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    std::cout << "Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 }
 
 void exp3()
 {
-    printfln("-------------------------------------EXP3---------------------------------");
-    std::cout << "  DMRG with correlation" << std::endl;
-
-    printfln("-------------------------------------PREAPRE OBJECTS----------------------");
-    clock_t  time0 = clock();
+    printfln("------------------------------ Initial State -----------------------------");
+    clock_t  timecpu = clock();
 
     seedRNG(1);
     auto sites = KondoHeisenberg( Args::global().getInt("L") );
@@ -76,24 +67,24 @@ void exp3()
     auto H = prepareHamiltonian(sites);
     auto sweeps = prepareSweepClass();
 
-    std::cout << "  Energy of initial state: " << std::real(innerC(psi,H,psi)) << std::endl;
+    std::cout << "  Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
 
-    std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 
-    printfln("-------------------------------------DMRG---------------------------------");
-    time0 = clock();
+    printfln("------------------- Ground State correlations from DMRG ------------------");
+    timecpu = clock();
 
     dmrg(psi,H,sweeps,{"Silent",true});
-    std::cout << "  Energy after DMRG: " << real(innerC(psi,H,psi)) << std::endl;
+    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
     std::cout << "  N: " << calculateN(sites, psi) << std::endl;
     std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
     std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
     std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_01: " << calculateSz_01(sites, psi) << std::endl;
+    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
     calculateCorrelationMatrixSz(sites,psi,"0");
     calculateCorrelationMatrixSz(sites,psi,"1");
-    calculateCorrelationMatrixSz(sites,psi,"01");
-    std::cout << "  Time: " << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
+    calculateCorrelationMatrixSz(sites,psi,"t");
+    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
 }
 
 void run()

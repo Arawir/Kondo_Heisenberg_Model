@@ -29,12 +29,12 @@ std::vector<std::string> parseInitState(std::string str)
 
     if(state.size()==0){
         for(int i=0; i<L; i+=2){
-           state.push_back("ud");
-           state.push_back("du");
+           state.push_back("uD");
+           state.push_back("dU");
         }
     }else if(state.size()<(uint)L){
         uint templateLength = state.size()-1;
-        std::cout << "Init state deduced" << std::endl;
+        std::cout << "  Init state deduced" << std::endl;
         for(int i=state.size()-1; i<L; i++){
             state.push_back( state.at(i-templateLength) );
         }
@@ -137,14 +137,14 @@ void setParam(bool &val, std::string argv)
 std::string convertInitStateString(std::string initState)
 {
     if(initState.back()=='\0'){ initState.pop_back(); }
-    if(initState=="0") return "0u"; //1
-    if(initState=="1") return "0d"; //2
-    if(initState=="2") return "uu"; //3
-    if(initState=="3") return "ud"; //4
-    if(initState=="4") return "du"; //5
-    if(initState=="5") return "dd"; //6
-    if(initState=="6") return "Du";//7
-    if(initState=="7") return "Dd";//8
+    if(initState=="0") return "0U"; //1
+    if(initState=="1") return "0D"; //2
+    if(initState=="2") return "uU"; //3
+    if(initState=="3") return "uD"; //4
+    if(initState=="4") return "dU"; //5
+    if(initState=="5") return "dD"; //6
+    if(initState=="6") return "2U"; //7
+    if(initState=="7") return "2D"; //8
     return initState;
 }
 
@@ -153,12 +153,12 @@ void readExperimentParameters(int argc, char *argv[])
     for(int i=1; i<argc; i++){
         if( paramName(argv[i]) == "L" ){ setParam("int", argv[i]); }
         else if( paramName(argv[i]) == "PBC" ){ setParam("bool", argv[i]); }
-        else if( paramName(argv[i]) == "t00" ){ setParam("double", argv[i]); }
+        else if( paramName(argv[i]) == "thop" ){ setParam("double", argv[i]); }
         else if( paramName(argv[i]) == "U" ){ setParam("double", argv[i]); }
         else if( paramName(argv[i]) == "K" ){ setParam("double", argv[i]); }
         else if( paramName(argv[i]) == "Jh" ){ setParam("double", argv[i]); }
         else if( paramName(argv[i]) == "Mu" ){ setParam("double", argv[i]); }
-        else if( paramName(argv[i]) == "t" ){ setParam("double", argv[i]); }
+        else if( paramName(argv[i]) == "time" ){ setParam("double", argv[i]); }
         else if( paramName(argv[i]) == "exp" ){ setParam("int", argv[i]); }
         else if( paramName(argv[i]) == "conSz" ){ setParam("bool", argv[i]); }
         else if( paramName(argv[i]) == "conN" ){ setParam("bool", argv[i]); }
@@ -176,10 +176,10 @@ void readExperimentParameters(int argc, char *argv[])
 
 void writeExperimentParameters()
 {
-    std::cout << "Experiment parameters: " << std::endl;
+    std::cout << "---------------------------- System parameters ---------------------------" << std::endl;
 
     std::cout << "  L = " << Args::global().getInt("L",4) << std::endl;
-    std::cout << "  t00 = " << Args::global().getReal("t00",0) << std::endl;
+    std::cout << "  thop = " << Args::global().getReal("thop",0) << std::endl;
     std::cout << "  U = " << Args::global().getReal("U",0) << std::endl;
     std::cout << "  K = " << Args::global().getReal("K",0) << std::endl;
     std::cout << "  Jh = " << Args::global().getReal("Jh",0) << std::endl;

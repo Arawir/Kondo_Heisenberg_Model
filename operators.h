@@ -9,7 +9,7 @@ using namespace itensor;
 
 MPO prepareHamiltonian(BasicSiteSet<KondoHeisenbergSite> &sites)
 {
-    double t00 = Args::global().getReal("t00",0);
+    double thop = Args::global().getReal("thop",0);
     double K = Args::global().getReal("K",0);
     double U = Args::global().getReal("U",0);
     double Jh = Args::global().getReal("Jh",0);
@@ -18,31 +18,31 @@ MPO prepareHamiltonian(BasicSiteSet<KondoHeisenbergSite> &sites)
 
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
-        ampo += t00,"cdagup",j,"cup",j+1;
-        ampo += t00,"cup",j,"cdagup",j+1;
-        ampo += t00,"cdagdn",j,"cdn",j+1;
-        ampo += t00,"cdn",j,"cdagdn",j+1;
+        ampo += +thop,"Cdagup",j,"Cup",j+1;
+        ampo += +thop,"Cup",j,"Cdagup",j+1;
+        ampo += +thop,"Cdagdn",j,"Cdn",j+1;
+        ampo += +thop,"Cdn",j,"Cdagdn",j+1;
 
-        ampo += K/2,"splus1",j,"sminus1",j+1;
-        ampo += K/2,"sminus1",j,"splus1",j+1;
-        ampo += K,"sz1",j,"sz1",j+1;
+        ampo += +K/2,"splus1",j,"sminus1",j+1;
+        ampo += +K/2,"sminus1",j,"splus1",j+1;
+        ampo += +K,"sz1",j,"sz1",j+1;
     }
 
     if(Args::global().getBool("PBC",0)){
-        ampo += t00,"cdagup",L,"cup",1;
-        ampo += t00,"cup",L,"cdagup",1;
-        ampo += t00,"cdagdn",L,"cdn",1;
-        ampo += t00,"cdn",L,"cdagdn",1;
+        ampo += +thop,"Cdagup",L,"Cup",1;
+        ampo += +thop,"Cup",L,"Cdagup",1;
+        ampo += +thop,"Cdagdn",L,"Cdn",1;
+        ampo += +thop,"Cdn",L,"Cdagdn",1;
 
-        ampo += K/2,"splus1",L,"sminus1",1;
-        ampo += K/2,"sminus1",L,"splus1",1;
-        ampo += K,"sz1",L,"sz1",1;
+        ampo += +K/2,"splus1",L,"sminus1",1;
+        ampo += +K/2,"sminus1",L,"splus1",1;
+        ampo += +K,"sz1",L,"sz1",1;
     }
 
     for(int j=1; j<=L; j++){
-        ampo += U,"nD",j;
-        ampo += -2.0*Jh,"shund",j;
-        ampo += Mu,"n",j;
+        ampo += +U,"nD",j;
+        ampo += -2*Jh,"shund",j;
+        ampo += +Mu,"n",j;
     }
 
     return toMPO(ampo);
@@ -105,24 +105,24 @@ double calculateSz1(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &p
     return inner(psi,toMPO(N),psi);
 }
 
-double calculateSz_01(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
+double calculateSzt(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
 {
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"szhund",i;
+        N += 1,"sztot",i;
     }
 
     return inner(psi,toMPO(N),psi);
 }
 
-double calculateCorrelationSz01(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi, int i, int j)
+double calculateCorrelationSzt(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi, int i, int j)
 {
     auto Sz_i = AutoMPO(sites);
     auto Sz_j = AutoMPO(sites);
 
-    Sz_i += 1,"szhund",i;
-    Sz_j += 1,"szhund",j;
+    Sz_i += 1,"sztot",i;
+    Sz_j += 1,"sztot",j;
 
     MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
 
@@ -160,7 +160,7 @@ double calculateMagnetizationSz(const BasicSiteSet<KondoHeisenbergSite> &sites, 
     auto N = AutoMPO(sites);
 
     for(int i=1; i<=psi.length(); i++){
-        N += 1,"szhund",i;
+        N += 1,"sztot",i;
     }
 
     return inner(psi,toMPO(N),psi);
@@ -172,7 +172,7 @@ void calculateCorrelationMatrixSz(const BasicSiteSet<KondoHeisenbergSite> &sites
 
     if(type=="0"){ std::cout << "Correlation matrix <Sz0_i Sz0_j>" << std::endl; }
     if(type=="1"){ std::cout << "Correlation matrix <Sz1_i Sz1_j>" << std::endl; }
-    if(type=="01"){ std::cout << "Correlation matrix <Sz01_i Sz01_j>" << std::endl; }
+    if(type=="t"){ std::cout << "Correlation matrix <Szt_i Szt_j>" << std::endl; }
     for(int i=1; i<=L; i++){
         std::cout << "  ";
         std::cout.width(3);
@@ -182,7 +182,7 @@ void calculateCorrelationMatrixSz(const BasicSiteSet<KondoHeisenbergSite> &sites
             std::cout.precision(4);
             if(type=="0"){ std::cout << std::fixed << calculateCorrelationSz0(sites,psi,i,j) << " | "; }
             if(type=="1"){ std::cout << std::fixed << calculateCorrelationSz1(sites,psi,i,j) << " | "; }
-            if(type=="01"){ std::cout << std::fixed << calculateCorrelationSz01(sites,psi,i,j) << " | "; }
+            if(type=="t"){ std::cout << std::fixed << calculateCorrelationSzt(sites,psi,i,j) << " | "; }
         }
         std::cout << std::endl;
     }
