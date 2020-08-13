@@ -68,16 +68,6 @@ std::string paramName(std::string argv)
     return argv.substr(0,pos);
 }
 
-void setParam(double &val, std::string argv)
-{
-    size_t pos = argv.find("=");
-    if(pos==std::string::npos){
-        std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
-    }
-    val = atof( argv.substr(pos+1).c_str() );
-    Args::global().add(paramName(argv), val);
-}
-
 void setParam(std::string type, std::string argv)
 {
     size_t pos = argv.find("=");
@@ -99,38 +89,6 @@ void setParam(std::string type, std::string argv)
         } else {
             std::cerr << "WARNING: unknown type (" << argv << ")" << std::endl;
         }
-    }
-}
-
-void setParam(int &val, std::string argv)
-{
-    size_t pos = argv.find("=");
-    if(pos==std::string::npos){
-        if( (argv[0]=='e')&&(argv[1]=='x')&&(argv[2]=='p')){
-            val = atoi( argv.substr(3).c_str() );
-            Args::global().add(paramName(argv), val);
-        } else {
-            std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
-        }
-    } else {
-        val = atoi( argv.substr(pos+1).c_str() );
-        Args::global().add(paramName(argv), val);
-    }
-}
-
-void setParam(bool &val, std::string argv)
-{
-    size_t pos = argv.find("=");
-    if(pos==std::string::npos){
-        if( (argv[0]=='e')&&(argv[1]=='x')&&(argv[2]=='p')){
-            val = atoi( argv.substr(3).c_str() );
-            Args::global().add(paramName(argv), val);
-        } else {
-            std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
-        }
-    } else {
-        val = (bool)atoi( argv.substr(pos+1).c_str() );
-        Args::global().add(paramName(argv), val);
     }
 }
 
