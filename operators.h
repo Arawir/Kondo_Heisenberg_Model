@@ -54,7 +54,7 @@ Sweeps prepareSweepClass()
 {
     auto sweeps = Sweeps(Args::global().getInt("sweeps",4));
     sweeps.maxdim() = Args::global().getInt("maxDim",100);
-    sweeps.mindim() = Args::global().getInt("maxDim",1);
+    sweeps.mindim() = Args::global().getInt("minDim",1);
     sweeps.cutoff() = Args::global().getReal("cutoff",1E-6);
     sweeps.niter() = 10;
     return sweeps;
