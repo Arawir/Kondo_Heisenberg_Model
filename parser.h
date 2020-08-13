@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cassert>
 
 #include "operators.h"
 
@@ -28,10 +29,7 @@ std::vector<std::string> parseInitState(std::string str)
     }
 
     if(state.size()==0){
-        for(int i=0; i<L; i+=2){
-           state.push_back("uD");
-           state.push_back("dU");
-        }
+        std::cerr << "  Init state is not delcared!" << std::endl;
     }else if(state.size()<(uint)L){
         uint templateLength = state.size()-1;
         std::cout << "  Init state deduced" << std::endl;
@@ -57,12 +55,8 @@ MPS prepareInitState(BasicSiteSet<KondoHeisenbergSite> &sites)
 
 std::string paramName(std::string argv)
 {
-
     size_t pos = argv.find("=");
     if(pos==std::string::npos){
-        if( (argv[0]=='e')&&(argv[1]=='x')&&(argv[2]=='p')){
-            return "exp";
-        }
         std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
     }
     return argv.substr(0,pos);
@@ -71,13 +65,7 @@ std::string paramName(std::string argv)
 void setParam(std::string type, std::string argv)
 {
     size_t pos = argv.find("=");
-    if(pos==std::string::npos){
-        if( (argv[0]=='e')&&(argv[1]=='x')&&(argv[2]=='p')){
-            Args::global().add(paramName(argv), atoi( argv.substr(3).c_str() ));
-        } else {
-            std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
-        }
-    } else {
+    if(pos!=std::string::npos){
         if(type=="bool"){
             Args::global().add(paramName(argv), (bool)atoi( argv.substr(pos+1).c_str() ));
         } else if(type=="string"){
@@ -89,21 +77,9 @@ void setParam(std::string type, std::string argv)
         } else {
             std::cerr << "WARNING: unknown type (" << argv << ")" << std::endl;
         }
+    } else {
+        std::cerr << "WARNING: cannot find \"=\" in parameter (" << argv << ")" << std::endl;
     }
-}
-
-std::string convertInitStateString(std::string initState)
-{
-    if(initState.back()=='\0'){ initState.pop_back(); }
-    if(initState=="0") return "0U"; //1
-    if(initState=="1") return "0D"; //2
-    if(initState=="2") return "uU"; //3
-    if(initState=="3") return "uD"; //4
-    if(initState=="4") return "dU"; //5
-    if(initState=="5") return "dD"; //6
-    if(initState=="6") return "2U"; //7
-    if(initState=="7") return "2D"; //8
-    return initState;
 }
 
 void readExperimentParameters(int argc, char *argv[])

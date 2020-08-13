@@ -7,15 +7,9 @@
 
 using namespace itensor;
 
-MPO prepareHamiltonian(BasicSiteSet<KondoHeisenbergSite> &sites)
+MPO prepareHamiltonianKH(BasicSiteSet<KondoHeisenbergSite> &sites,
+                       int L, double thop, double K, double U, double Jh, double Mu)
 {
-    double thop = Args::global().getReal("thop",0);
-    double K = Args::global().getReal("K",0);
-    double U = Args::global().getReal("U",0);
-    double Jh = Args::global().getReal("Jh",0);
-    double Mu = Args::global().getReal("Mu",0);
-    int L = Args::global().getInt("L",4);
-
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
         ampo += +thop,"Cdagup",j,"Cup",j+1;
