@@ -1,115 +1,90 @@
-#include "parser.h"
-
-
-void exp1()
-{
-    printfln("------------------------------ Initial State -----------------------------");
-    clock_t timecpu = clock();
-
-    seedRNG(1);
-    auto sites = KondoHeisenberg( Args::global().getInt("L") );
-    auto psi = prepareInitState(sites);
-    auto H = prepareHamiltonian(sites);
-    auto sweeps = prepareSweepClass();
-
-    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-    std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-    std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-
-    printfln("------------------------- Ground State from DMRG -------------------------");
-    timecpu = clock();
-
-    dmrg(psi,H,sweeps);
-    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-    std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-    std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-}
-
-void exp2()
-{
-    double time = Args::global().getReal("time");
-
-    printfln("------------------------------ Initial State -----------------------------");
-    clock_t  timecpu = clock();
-
-    seedRNG(1);
-    auto sites = KondoHeisenberg( Args::global().getInt("L") );
-    auto psi = prepareInitState(sites);
-    auto H = prepareHamiltonian(sites);
-    auto sweeps = prepareSweepClass();
-
-    std::cout << "Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
-    std::cout << "Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-
-    printfln("------------------ TVDP time evolution from initial state ----------------");
-    timecpu = clock();
-    auto energy = tdvp(psi,H,-time*10.0,sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
-    std::cout << "Energy after TVDP: " << energy << std::endl;
-    std::cout << "Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-}
-
-void exp3()
-{
-    printfln("------------------------------ Initial State -----------------------------");
-    clock_t  timecpu = clock();
-
-    seedRNG(1);
-    auto sites = KondoHeisenberg( Args::global().getInt("L") );
-    auto psi = prepareInitState(sites);
-    auto H = prepareHamiltonian(sites);
-    auto sweeps = prepareSweepClass();
-
-    std::cout << "  Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
-
-    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-
-    printfln("------------------- Ground State correlations from DMRG ------------------");
-    timecpu = clock();
-
-    dmrg(psi,H,sweeps,{"Silent",true});
-    std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-    std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-    std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-    std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-    std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-    std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-    calculateCorrelationMatrixSz(sites,psi,"0");
-    calculateCorrelationMatrixSz(sites,psi,"1");
-    calculateCorrelationMatrixSz(sites,psi,"t");
-    std::cout << "  Time: " << (clock()-timecpu)/(double)CLOCKS_PER_SEC << " [s]" << std::endl;
-}
-
-void run()
-{
-    switch (Args::global().getInt("exp",-1)){
-    case 1 :
-        exp1();
-        break;
-    case 2 :
-        exp2();
-        break;
-    case 3 :
-        exp3();
-        break;
-    default :
-        std::cerr << "ERROR: epxeriment was not selected!" << std::endl;
-        break;
-    }
-}
+#include "interface.h"
+#include "model.h"
+#include "tdvp.h"
 
 int main(int argc, char *argv[])
 {
-    readExperimentParameters(argc,argv);
-    writeExperimentParameters();
-    run();
+    Experiments("Dmrg") = [](){
+        ExpCon.addPoint("Initialization");
+
+        seedRNG(1);
+        auto sites = KondoHeisenberg( getI("L") );
+        auto psi = prepareInitState(sites);
+        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
+        auto sweeps = prepareSweepClass();
+
+        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+
+        ExpCon.addPoint("Starting DMRG");
+        dmrg(psi,H,sweeps);
+
+        ExpCon.addPoint("Output data");
+        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+    };
+
+    Experiments("DmrgWithCorrelations") = [](){
+        ExpCon.addPoint("Initialization");
+
+        seedRNG(1);
+        auto sites = KondoHeisenberg( getI("L") );
+        auto psi = prepareInitState(sites);
+        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
+        auto sweeps = prepareSweepClass();
+
+        std::cout << "  Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
+
+
+        ExpCon.addPoint("Starting DMRG");
+        dmrg(psi,H,sweeps,{"Silent",true});
+
+
+        ExpCon.addPoint("Output data");
+        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        calculateCorrelationMatrixSz(sites,psi,"0");
+        calculateCorrelationMatrixSz(sites,psi,"1");
+        calculateCorrelationMatrixSz(sites,psi,"t");
+    };
+
+
+    Params.add("thop","double","0.0");
+    Params.add("U","double","0.0");
+    Params.add("K","double","0.0");
+    Params.add("Jh","double","0.0");
+    Params.add("Mu","double","0.0");
+
+    Params.add("L","int","4");
+    Params.add("PBC","bool","0");
+
+    Params.add("Silent","bool","1");
+    Params.add("cutoff","double","1E-6");
+    Params.add("sweeps","int","4");
+    Params.add("minDim","int","1");
+    Params.add("maxDim","int","100");
+    Params.add("niter","int","10");
+    Params.add("state","string","uD-dU");
+
+    Params.add("ConserveN","bool","0");
+    Params.add("ConserveSz","bool","0");
+
+    Params.add("exp","string","1");
+
+    Params.set(argc,argv);
+    Experiments.run();
 
     return 0;
 }
