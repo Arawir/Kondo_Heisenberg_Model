@@ -1,5 +1,7 @@
-CMakeLists.txt
 CMakeFiles/*
+
+bin/*
+data/*
 
 
 

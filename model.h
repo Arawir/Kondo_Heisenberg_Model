@@ -1,14 +1,23 @@
-#ifndef OPERATORS
-#define OPERATORS
+#ifndef MODEL
+#define MODEL
 
 #include "itensor/all.h"
-#include "tdvp.h"
-#include "kondo_heisenberg.h"
 
 using namespace itensor;
 
-MPO prepareHamiltonianKH(BasicSiteSet<KondoHeisenbergSite> &sites,
-                       int L, double thop, double K, double U, double Jh, double Mu)
+
+Sweeps prepareSweepClass()
+{
+    auto sweeps = Sweeps(Args::global().getInt("sweeps"));
+    sweeps.maxdim() = Args::global().getInt("maxDim");
+    sweeps.mindim() = Args::global().getInt("minDim");
+    sweeps.cutoff() = Args::global().getReal("cutoff");
+    sweeps.niter() = Args::global().getReal("niter");
+    return sweeps;
+}
+
+MPO KHHamiltonian(KondoHeisenberg &sites,
+                       int L, double thop, double K, double Jh, double Mu, double U)
 {
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
@@ -22,7 +31,7 @@ MPO prepareHamiltonianKH(BasicSiteSet<KondoHeisenbergSite> &sites,
         ampo += +K,"sz1",j,"sz1",j+1;
     }
 
-    if(Args::global().getBool("PBC",0)){
+    if(Args::global().getBool("PBC")){
         ampo += +thop,"Cdagup",L,"Cup",1;
         ampo += +thop,"Cup",L,"Cdagup",1;
         ampo += +thop,"Cdagdn",L,"Cdn",1;
@@ -41,19 +50,6 @@ MPO prepareHamiltonianKH(BasicSiteSet<KondoHeisenbergSite> &sites,
 
     return toMPO(ampo);
 }
-
-
-
-Sweeps prepareSweepClass()
-{
-    auto sweeps = Sweeps(Args::global().getInt("sweeps",4));
-    sweeps.maxdim() = Args::global().getInt("maxDim",100);
-    sweeps.mindim() = Args::global().getInt("minDim",1);
-    sweeps.cutoff() = Args::global().getReal("cutoff",1E-6);
-    sweeps.niter() = 10;
-    return sweeps;
-}
-
 
 double calculateN(const BasicSiteSet<KondoHeisenbergSite> &sites, const MPS &psi)
 {
@@ -182,5 +178,5 @@ void calculateCorrelationMatrixSz(const BasicSiteSet<KondoHeisenbergSite> &sites
     }
 }
 
-#endif // OPERATORS
+#endif // MODEL
 
