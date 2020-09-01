@@ -73,51 +73,54 @@ double calculateNd(const BasicSiteSet<KHSite> &sites, const MPS &psi)
     return inner(psi,toMPO(N),psi);
 }
 
-//double calculateSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi)
-//{
-//    auto N = AutoMPO(sites);
+double calculateSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi)
+{
+    auto N = AutoMPO(sites);
 
-//    for(int i=1; i<=psi.length(); i++){
-//        N += 1,"sz0",i;
-//    }
+    for(int i=1; i<=psi.length(); i++){
+        N += 1,"Sz0",i;
+    }
 
-//    return inner(psi,toMPO(N),psi);
-//}
+    return inner(psi,toMPO(N),psi);
+}
 
-//double calculateSz1(const BasicSiteSet<KHSite> &sites, const MPS &psi)
-//{
-//    auto N = AutoMPO(sites);
+double calculateSz1(const BasicSiteSet<KHSite> &sites, const MPS &psi)
+{
+    auto N = AutoMPO(sites);
 
-//    for(int i=1; i<=psi.length(); i++){
-//        N += 1,"sz1",i;
-//    }
+    for(int i=1; i<=psi.length(); i++){
+        N += 1,"Sz1",i;
+    }
 
-//    return inner(psi,toMPO(N),psi);
-//}
+    return inner(psi,toMPO(N),psi);
+}
 
-//double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
-//{
-//    auto N = AutoMPO(sites);
+double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
+{
+    auto N = AutoMPO(sites);
 
-//    for(int i=1; i<=psi.length(); i++){
-//        N += 1,"sztot",i;
-//    }
+    for(int i=1; i<=psi.length(); i++){
+        N += 1,"Sz0",i;
+        N += 1,"Sz1",i;
+    }
 
-//    return inner(psi,toMPO(N),psi);
-//}
+    return inner(psi,toMPO(N),psi);
+}
 
-//double calculateCorrelationSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
-//{
-//    auto Sz_i = AutoMPO(sites);
-//    auto Sz_j = AutoMPO(sites);
+double calculateCorrelationSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
+{
+    auto Sz_i = AutoMPO(sites);
+    auto Sz_j = AutoMPO(sites);
 
-//    Sz_i += 1,"sztot",i;
-//    Sz_j += 1,"sztot",j;
+    Sz_i += 1,"Sz0",i;
+    Sz_i += 1,"Sz1",i;
+    Sz_j += 1,"Sz0",j;
+    Sz_j += 1,"Sz1",j;
 
-//    MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
+    MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
 
-//    return inner(psi,SziSzj,psi);
-//}
+    return inner(psi,SziSzj,psi);
+}
 
 //double calculateCorrelationSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
 //{
@@ -156,27 +159,23 @@ double calculateNd(const BasicSiteSet<KHSite> &sites, const MPS &psi)
 //    return inner(psi,toMPO(N),psi);
 //}
 
-//void calculateCorrelationMatrixSz(const BasicSiteSet<KHSite> &sites, const MPS &psi, std::string type)
-//{
-//    int L = Args::global().getInt("L");
+void calculateCorrelationMatrixSz(const BasicSiteSet<KHSite> &sites, const MPS &psi)
+{
+    int L = Args::global().getInt("L");
 
-//    if(type=="0"){ std::cout << "Correlation matrix <Sz0_i Sz0_j>" << std::endl; }
-//    if(type=="1"){ std::cout << "Correlation matrix <Sz1_i Sz1_j>" << std::endl; }
-//    if(type=="t"){ std::cout << "Correlation matrix <Szt_i Szt_j>" << std::endl; }
-//    for(int i=1; i<=L; i++){
-//        std::cout << "  ";
-//        std::cout.width(3);
-//        std::cout << i << " | ";
-//        for(int j=1; j<=L; j++){
-//            std::cout.width(8);
-//            std::cout.precision(4);
-//            if(type=="0"){ std::cout << std::fixed << calculateCorrelationSz0(sites,psi,i,j) << " | "; }
-//            if(type=="1"){ std::cout << std::fixed << calculateCorrelationSz1(sites,psi,i,j) << " | "; }
-//            if(type=="t"){ std::cout << std::fixed << calculateCorrelationSzt(sites,psi,i,j) << " | "; }
-//        }
-//        std::cout << std::endl;
-//    }
-//}
+    std::cout << "Correlation matrix <Szt_i Szt_j>" << std::endl;
+    for(int i=1; i<=L; i++){
+        std::cout << "  ";
+        std::cout.width(3);
+        std::cout << i << " | ";
+        for(int j=1; j<=L; j++){
+            std::cout.width(8);
+            std::cout.precision(4);
+            std::cout << std::fixed << calculateCorrelationSzt(sites,psi,i,j) << " | ";
+        }
+        std::cout << std::endl;
+    }
+}
 
 #endif // MODEL
 
