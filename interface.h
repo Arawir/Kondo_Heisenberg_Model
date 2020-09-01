@@ -162,7 +162,7 @@ std::vector<std::string> parseInitState(std::string str)
     return state;
 }
 
-itensor::MPS prepareInitState(KondoHeisenberg &sites)
+itensor::MPS prepareInitState(KH &sites)
 {
     std::vector<std::string> initState = parseInitState(Args::global().getString("state"));
     int L = Params.getInt("L");
