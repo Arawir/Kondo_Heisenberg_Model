@@ -1,6 +1,7 @@
 #include "interface.h"
 #include "model.h"
 #include "tdvp.h"
+#include "itensor/util/print_macro.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
         std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
         std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
         std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
     };
 
     Experiments("DmrgWithCorrelations") = [](){
@@ -67,6 +69,39 @@ int main(int argc, char *argv[])
         calculateCorrelationMatrixSz(sites,psi, "SpSm");
     };
 
+    Experiments("timeEv") = [](){
+        ExpCon.addPoint("Initialization");
+
+        seedRNG(1);
+        auto sites = KH( getI("L") );
+        auto psi = prepareInitState(sites);
+        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
+        auto sweeps = prepareSweepClass();
+
+        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+
+        auto gates = generateTrotterGates(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"),getD("dTime"));
+        auto psi0 = psi;
+
+        ExpCon.addPoint("Starting timeEv");
+        gateTEvol(gates,getD("time"),getD("dTime"),psi,{"Cutoff=",getD("cutoff"),"Verbose=",true});
+        Print(innerC(psi,psi0));
+
+        ExpCon.addPoint("Output data");
+        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
+    };
+
 
     Params.add("thop","double","0.0");
     Params.add("U","double","0.0");
@@ -87,6 +122,8 @@ int main(int argc, char *argv[])
 
     Params.add("ConserveN","bool","0");
     Params.add("ConserveSz","bool","0");
+    Params.add("time","double","0");
+    Params.add("dTime","double","0");
 
     Params.add("exp","string","1");
 

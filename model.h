@@ -55,6 +55,58 @@ MPO KHHamiltonian(KH &sites,
     return toMPO(ampo);
 }
 
+auto generateTrotterGates(KH &sites,
+                          int L, double thop, double K, double Jh, double Mu, double U, double tstep)
+{
+    auto gates = std::vector<BondGate>();
+
+    for(int j=1; j<L; j++){
+        auto hterm = +thop*op(sites,"Cdagup",j)*op(sites,"Cup",j+1);
+        hterm += -thop*op(sites,"Cup",j)*op(sites,"Cdagup",j+1);
+        hterm += +thop*op(sites,"Cdagdn",j)*op(sites,"Cdn",j+1);
+        hterm += -thop*op(sites,"Cdn",j)*op(sites,"Cdagdn",j+1);
+
+        hterm += K/2*op(sites,"S+1",j)*op(sites,"S-1",j+1);
+        hterm += K/2*op(sites,"S-1",j)*op(sites,"S+1",j+1);
+        hterm += K*op(sites,"Sz1",j)*op(sites,"Sz1",j+1);
+
+        auto g = BondGate(sites,j,j+1,BondGate::tReal,tstep/2.,hterm);
+        gates.push_back(g);
+    }
+
+    if(Args::global().getBool("PBC")){
+        auto hterm = +thop*op(sites,"Cdagup",L)*op(sites,"Cup",1);
+        hterm += -thop*op(sites,"Cup",L)*op(sites,"Cdagup",1);
+        hterm += +thop*op(sites,"Cdagdn",L)*op(sites,"Cdn",1);
+        hterm += -thop*op(sites,"Cdn",L)*op(sites,"Cdagdn",1);
+
+        hterm += K/2*op(sites,"S+1",L)*op(sites,"S-1",1);
+        hterm += K/2*op(sites,"S-1",L)*op(sites,"S+1",1);
+        hterm += K*op(sites,"Sz1",L)*op(sites,"Sz1",1);
+
+        auto g = BondGate(sites,L,1,BondGate::tReal,tstep/2.,hterm);
+        gates.push_back(g);
+    }
+
+    for(int j=1; j<=L-1; j++){
+        auto hterm = +U*op(sites,"Nupdn",j)*op(sites,"Id",j+1);
+        hterm += +Jh*op(sites,"S01",j)*op(sites,"Id",j+1);
+
+        auto g = BondGate(sites,j,j+1,BondGate::tReal,tstep/2.,hterm);
+        gates.push_back(g);
+    }
+
+    auto hterm = +U*op(sites,"Id",L-1)*op(sites,"Nupdn",L);
+    hterm += +Jh*op(sites,"Id",L-1)*op(sites,"S01",L);
+
+    auto g = BondGate(sites,L-1,L,BondGate::tReal,tstep/2.,hterm);
+    gates.push_back(g);
+
+    return gates;
+}
+
+
+
 double calculateN(const BasicSiteSet<KHSite> &sites, const MPS &psi)
 {
     auto N = AutoMPO(sites);
@@ -63,7 +115,7 @@ double calculateN(const BasicSiteSet<KHSite> &sites, const MPS &psi)
         N += 1,"Ntot",i;
     }
 
-    return inner(psi,toMPO(N),psi);
+    return innerC(psi,toMPO(N),psi).real();
 }
 
 double calculateNd(const BasicSiteSet<KHSite> &sites, const MPS &psi)
@@ -74,7 +126,7 @@ double calculateNd(const BasicSiteSet<KHSite> &sites, const MPS &psi)
         N += 1,"Nupdn",i;
     }
 
-    return inner(psi,toMPO(N),psi);
+    return innerC(psi,toMPO(N),psi).real();
 }
 
 double calculateSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi)
@@ -85,7 +137,7 @@ double calculateSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi)
         N += 1,"Sz0",i;
     }
 
-    return inner(psi,toMPO(N),psi);
+    return innerC(psi,toMPO(N),psi).real();
 }
 
 double calculateSz1(const BasicSiteSet<KHSite> &sites, const MPS &psi)
@@ -96,7 +148,7 @@ double calculateSz1(const BasicSiteSet<KHSite> &sites, const MPS &psi)
         N += 1,"Sz1",i;
     }
 
-    return inner(psi,toMPO(N),psi);
+    return innerC(psi,toMPO(N),psi).real();
 }
 
 double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
@@ -108,7 +160,7 @@ double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
         N += 1,"Sz1",i;
     }
 
-    return inner(psi,toMPO(N),psi);
+    return innerC(psi,toMPO(N),psi).real();
 }
 
 
