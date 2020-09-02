@@ -4,7 +4,6 @@
 #pragma once
 
 #include "itensor/mps/siteset.h"
-#include "itensor/util/str.h"
 
 namespace itensor {
 
@@ -44,14 +43,14 @@ class KHSite
                 }
             else if(conserveNf) // don't conserve Sz
                 {
-                s = Index(QN({"Nf",0,-1}),1, //Up
-                          QN({"Nf",1,-1}),1,
-                          QN({"Nf",1,-1}),1,
-                          QN({"Nf",2,-1}),1,
-                          QN({"Nf",0,-1}),1, //Dn
-                          QN({"Nf",1,-1}),1,
-                          QN({"Nf",1,-1}),1,
-                          QN({"Nf",2,-1}),1,Out,ts);
+                s = Index(QN({"Nf",0,-1}),1, //0u
+                          QN({"Nf",1,-1}),1, //uu
+                          QN({"Nf",1,-1}),1, //du
+                          QN({"Nf",2,-1}),1, //2u
+                          QN({"Nf",0,-1}),1, //0d
+                          QN({"Nf",1,-1}),1, //ud
+                          QN({"Nf",1,-1}),1, //dd
+                          QN({"Nf",2,-1}),1,Out,ts); //2d
                 }
             else if(conserveSz) //don't conserve Nf, only fermion parity
                 {

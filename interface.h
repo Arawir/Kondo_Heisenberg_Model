@@ -164,6 +164,14 @@ std::vector<std::string> parseInitState(std::string str)
 
 itensor::MPS prepareInitState(KH &sites)
 {
+    if( (Args::global().getString("state")=="random")||(Args::global().getString("state")=="r")){
+        auto state = itensor::InitState(sites);
+        auto s2 = itensor::randomMPS(state);
+        s2.orthogonalize();
+        s2.normalize();
+        return s2;
+    }
+
     std::vector<std::string> initState = parseInitState(Args::global().getString("state"));
     int L = Params.getInt("L");
 

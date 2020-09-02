@@ -23,9 +23,11 @@ MPO KHHamiltonian(KH &sites,
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
         ampo += +thop,"Cdagup",j,"Cup",j+1;
-        ampo += +thop,"Cdagup",j+1,"Cup",j;
+       // ampo += +thop,"Cdagup",j+1,"Cup",j;
+        ampo += -thop,"Cup",j,"Cdagup",j+1;
         ampo += +thop,"Cdagdn",j,"Cdn",j+1;
-        ampo += +thop,"Cdagdn",j+1,"Cdn",j;
+       // ampo += +thop,"Cdagdn",j+1,"Cdn",j;
+        ampo += -thop,"Cdn",j,"Cdagdn",j+1;
 
         ampo += K/2,"S+1",j,"S-1",j+1;
         ampo += K/2,"S-1",j,"S+1",j+1;
@@ -34,9 +36,11 @@ MPO KHHamiltonian(KH &sites,
 
     if(Args::global().getBool("PBC")){
         ampo += +thop,"Cdagup",L,"Cup",1;
-        ampo += +thop,"Cdagup",1,"Cup",L;
+       // ampo += +thop,"Cdagup",1,"Cup",L;
+        ampo += -thop,"Cup",L,"Cdagup",1;
         ampo += +thop,"Cdagdn",L,"Cdn",1;
-        ampo += +thop,"Cdagdn",1,"Cdn",L;
+       // ampo += +thop,"Cdagdn",1,"Cdn",L;
+        ampo += -thop,"Cdn",L,"Cdagdn",1;
 
         ampo += K/2,"S+1",L,"S-1",1;
         ampo += K/2,"S-1",L,"S+1",1;
@@ -107,71 +111,54 @@ double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
     return inner(psi,toMPO(N),psi);
 }
 
-double calculateCorrelationSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
+
+double calculateCorrelation(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j, std::string type)
 {
-    auto Sz_i = AutoMPO(sites);
-    auto Sz_j = AutoMPO(sites);
+    auto Si = AutoMPO(sites);
+    auto Sj = AutoMPO(sites);
 
-    Sz_i += 1,"Sz0",i;
-    Sz_i += 1,"Sz1",i;
-    Sz_j += 1,"Sz0",j;
-    Sz_j += 1,"Sz1",j;
+    if(type=="Sz0"){
+        Si += 1,"Sz0",i;
+        Sj += 1,"Sz0",j;
+    } else if(type=="Sz1"){
+        Si += 1,"Sz1",i;
+        Sj += 1,"Sz1",j;
+    } else if(type=="SzSz"){
+        Si += 1,"Sz0",i;
+        Si += 1,"Sz1",i;
+        Sj += 1,"Sz0",j;
+        Sj += 1,"Sz1",j;
+    } else if(type=="SpSm"){
+        Si += 1,"S+0",i;
+        Si += 1,"S+1",i;
+        Sj += 1,"S-0",j;
+        Sj += 1,"S-1",j;
+    } else if(type=="SmSp"){
+        Si += 1,"S-0",i;
+        Si += 1,"S-1",i;
+        Sj += 1,"S+0",j;
+        Sj += 1,"S+1",j;
+    }
 
-    MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
+    MPO SiSj = nmultMPO(toMPO(Si),prime(toMPO(Sj)));
 
-    return inner(psi,SziSzj,psi);
+    return inner(psi,SiSj,psi);
 }
 
-//double calculateCorrelationSz0(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
-//{
-//    auto Sz_i = AutoMPO(sites);
-//    auto Sz_j = AutoMPO(sites);
-
-//    Sz_i += 1,"sz0",i;
-//    Sz_j += 1,"sz0",j;
-
-//    MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
-
-//    return inner(psi,SziSzj,psi);
-//}
-
-//double calculateCorrelationSz1(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j)
-//{
-//    auto Sz_i = AutoMPO(sites);
-//    auto Sz_j = AutoMPO(sites);
-
-//    Sz_i += 1,"sz1",i;
-//    Sz_j += 1,"sz1",j;
-
-//    MPO SziSzj = nmultMPO(toMPO(Sz_i),prime(toMPO(Sz_j)));
-
-//    return inner(psi,SziSzj,psi);
-//}
-
-//double calculateMagnetizationSz(const BasicSiteSet<KHSite> &sites, const MPS &psi)
-//{
-//    auto N = AutoMPO(sites);
-
-//    for(int i=1; i<=psi.length(); i++){
-//        N += 1,"sztot",i;
-//    }
-
-//    return inner(psi,toMPO(N),psi);
-//}
-
-void calculateCorrelationMatrixSz(const BasicSiteSet<KHSite> &sites, const MPS &psi)
+void calculateCorrelationMatrixSz(const BasicSiteSet<KHSite> &sites, const MPS &psi, std::string type)
 {
     int L = Args::global().getInt("L");
 
-    std::cout << "Correlation matrix <Szt_i Szt_j>" << std::endl;
+    if(type=="Sz0") std::cout << "Correlation matrix <Sz0_i Sz0_j>" << std::endl;
+    if(type=="Sz1") std::cout << "Correlation matrix <Sz1_i Sz1_j>" << std::endl;
+    if(type=="SzSz") std::cout << "Correlation matrix <Sz_i Sz_j>" << std::endl;
+    if(type=="SpSm") std::cout << "Correlation matrix <Sp_i Sm_j>" << std::endl;
+    if(type=="SmSp") std::cout << "Correlation matrix <Sm_i Sp_j>" << std::endl;
     for(int i=1; i<=L; i++){
-        std::cout << "  ";
-        std::cout.width(3);
-        std::cout << i << " | ";
         for(int j=1; j<=L; j++){
             std::cout.width(8);
             std::cout.precision(4);
-            std::cout << std::fixed << calculateCorrelationSzt(sites,psi,i,j) << " | ";
+            std::cout << std::fixed << calculateCorrelation(sites,psi,i,j,type) << " ";
         }
         std::cout << std::endl;
     }

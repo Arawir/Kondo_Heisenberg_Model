@@ -60,7 +60,11 @@ int main(int argc, char *argv[])
         std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
         std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
         std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-        calculateCorrelationMatrixSz(sites,psi);
+        calculateCorrelationMatrixSz(sites,psi, "Sz0");
+        calculateCorrelationMatrixSz(sites,psi, "Sz1");
+        calculateCorrelationMatrixSz(sites,psi, "SzSz");
+        calculateCorrelationMatrixSz(sites,psi, "SmSp");
+        calculateCorrelationMatrixSz(sites,psi, "SpSm");
     };
 
 
