@@ -2,6 +2,11 @@
 #include "model.h"
 #include "tdvp.h"
 #include "itensor/util/print_macro.h"
+#include "basisextension.h"
+
+#include <complex>
+#define im std::complex<double>{0.0,1.0}
+
 
 int main(int argc, char *argv[])
 {
@@ -85,21 +90,28 @@ int main(int argc, char *argv[])
         std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
         std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
 
-        auto gates = generateTrotterGates(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"),getD("dTime"));
-        auto psi0 = psi;
+        ExpCon.addPoint("Starting TDVP");
 
-        ExpCon.addPoint("Starting timeEv");
-        gateTEvol(gates,getD("time"),getD("dTime"),psi,{"Cutoff=",getD("cutoff"),"Verbose=",true});
-        Print(innerC(psi,psi0));
+        double energy = innerC(psi,H,psi).real();
 
-        ExpCon.addPoint("Output data");
-        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
+        for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
+            std::cout << "  t: " << time << " ";
+            std::cout << energy << " ";
+            std::cout << innerC(psi,H,psi).real() << " ";
+            std::cout << calculateN(sites, psi) << " ";
+            std::cout << calculateSz0(sites, psi) << " ";
+            std::cout << calculateSz1(sites, psi) << " ";
+            std::cout << calculateSzt(sites, psi) << " ";
+            std::cout << maxLinkDim(psi) << " ";
+            std::cout << std::endl;
+
+            if(time<getI("basisExtStes")*getD("dtime")){
+               std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
+               addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",getB("Silent")});
+            }
+            energy = tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",1});
+        }
+        ExpCon.addPoint("Finish");
     };
 
 
@@ -122,10 +134,11 @@ int main(int argc, char *argv[])
 
     Params.add("ConserveN","bool","0");
     Params.add("ConserveSz","bool","0");
-    Params.add("time","double","0");
-    Params.add("dTime","double","0");
+    Params.add("maxtime","double","0");
+    Params.add("dtime","double","0");
 
     Params.add("exp","string","1");
+    Params.add("basisExtSteps","int","2");
 
     Params.set(argc,argv);
     Experiments.run();
