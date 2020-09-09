@@ -293,6 +293,12 @@ struct Observable
         generateMPO = generate;
     }
 
+    void operator =  (MPO &nMatrix)
+    {
+        matrix = nMatrix;
+        wasGenerated=true;
+    }
+
     void generateIfNeeded()
     {
         if(wasGenerated==false){
@@ -364,7 +370,7 @@ private:
     void writeObservableValue(std::string name, MPS &psi)
     {
         observable(name)->generateIfNeeded();
-        std::cout << observable(name)->expectedValue(psi) << " ";
+        std::cout << observable(name)->expectedValue(psi).real() << " ";
     }
     void writeObservableValue(double val, MPS &psi){ std::cout << val << " "; }
     void writeObservableValue(cpx val, MPS &psi){ std::cout << val << " "; }

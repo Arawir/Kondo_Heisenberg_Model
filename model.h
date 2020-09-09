@@ -63,11 +63,55 @@ void prepareObservables()
         auto N = AutoMPO(sites);
 
         for(int i=1; i<=getI("L"); i++){
-            N += 1,"Nupdn",i;
+            N += 1,"Ntot",i;
         }
 
         return toMPO(N);
     };
+
+    Obs("Nd") = [](const BasicSiteSet<KHSite> &sites){
+        auto N = AutoMPO(sites);
+
+        for(int i=1; i<=getI("L"); i++){
+            N += 1,"Nupdn",i;
+        }
+
+
+        return toMPO(N);
+    };
+
+    Obs("Sz0") = [](const BasicSiteSet<KHSite> &sites){
+        auto N = AutoMPO(sites);
+
+        for(int i=1; i<=getI("L"); i++){
+            N += 1,"Sz0",i;
+        }
+
+        return toMPO(N);
+    };
+
+    Obs("Sz1") = [](const BasicSiteSet<KHSite> &sites){
+        auto N = AutoMPO(sites);
+
+        for(int i=1; i<=getI("L"); i++){
+            N += 1,"Sz1",i;
+        }
+
+        return toMPO(N);
+    };
+
+    Obs("Szt") = [](const BasicSiteSet<KHSite> &sites){
+        auto N = AutoMPO(sites);
+
+        for(int i=1; i<=getI("L"); i++){
+            N += 1,"Sz0",i;
+            N += 1,"Sz1",i;
+        }
+
+        return toMPO(N);
+    };
+
+
 }
 
 std::tuple<KH,MPS,MPO,Sweeps> prepareExpBasic()
@@ -139,7 +183,7 @@ double calculateSzt(const BasicSiteSet<KHSite> &sites, const MPS &psi)
     return innerC(psi,toMPO(N),psi).real();
 }
 
-
+////
 double calculateCorrelation(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j, std::string type)
 {
     auto Si = AutoMPO(sites);

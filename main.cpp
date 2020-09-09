@@ -11,56 +11,34 @@ int main(int argc, char *argv[])
     Experiments("Dmrg") = [](){
 
         ExpCon.addPoint("Initialization");
-
         auto [sites,psi,H,sweeps] = prepareExpBasic();
-
         Obs.setSites(sites);
-        Obs.calc(psi,"N", 44, 4.4);
+        Obs("E") = H;
 
-//        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-//        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-//        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-//        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-//        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-//        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        Obs.calc(psi,"E","N","Nd","Sz0","Sz1","Szt");
 
-//        ExpCon.addPoint("Starting DMRG");
-//        dmrg(psi,H,sweeps);
+        ExpCon.addPoint("Starting DMRG");
+        dmrg(psi,H,sweeps);
 
-//        ExpCon.addPoint("Output data");
-//        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-//        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-//        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-//        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-//        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-//        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-//        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
+        ExpCon.addPoint("Output data");
+        Obs.calc(psi,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
     };
 
     Experiments("DmrgWithCorrelations") = [](){
         ExpCon.addPoint("Initialization");
 
         auto [sites,psi,H,sweeps] = prepareExpBasic();
+        Obs.setSites(sites); Obs("E") = H;
 
-        std::cout << "  Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        Obs.calc(psi,"E","N","Nd","Sz0","Sz1","Szt");
 
 
         ExpCon.addPoint("Starting DMRG");
-        dmrg(psi,H,sweeps,{"Silent",true});
+        dmrg(psi,H,sweeps);
 
 
         ExpCon.addPoint("Output data");
-        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        Obs.calc(psi,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
         calculateCorrelationMatrixSz(sites,psi, "Sz0");
         calculateCorrelationMatrixSz(sites,psi, "Sz1");
         calculateCorrelationMatrixSz(sites,psi, "SzSz");
@@ -72,30 +50,18 @@ int main(int argc, char *argv[])
         ExpCon.addPoint("Initialization");
 
         auto [sites,psi,H,sweeps] = prepareExpBasic();
-
-        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        Obs.setSites(sites); Obs("E") = H;
+        Obs.calc(psi,"E","N","Nd","Sz0","Sz1","Szt");
 
         ExpCon.addPoint("Starting TDVP");
 
         double energy = innerC(psi,H,psi).real();
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            std::cout << "  t: " << time << " ";
-            std::cout << energy << " ";
-            std::cout << innerC(psi,H,psi).real() << " ";
-            std::cout << calculateN(sites, psi) << " ";
-            std::cout << calculateSz0(sites, psi) << " ";
-            std::cout << calculateSz1(sites, psi) << " ";
-            std::cout << calculateSzt(sites, psi) << " ";
-            std::cout << maxLinkDim(psi) << " ";
-            std::cout << std::endl;
+            std::cout << "  t: ";
+            Obs.calc(psi,time,energy,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
 
-            if(time<getI("basisExtStes")*getD("dtime")){
+            if(time<getI("basisExtSteps")*getD("dtime")){
                std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
                addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",getB("Silent")});
             }
