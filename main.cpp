@@ -4,50 +4,43 @@
 #include "itensor/util/print_macro.h"
 #include "basisextension.h"
 
-#include <complex>
-#define im std::complex<double>{0.0,1.0}
 
 
 int main(int argc, char *argv[])
 {
     Experiments("Dmrg") = [](){
+
         ExpCon.addPoint("Initialization");
 
         auto [sites,psi,H,sweeps] = prepareExpBasic();
-//        seedRNG(1);
-//        auto sites = KH( getI("L") );
-//        auto psi = prepareInitState(sites);
-//        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
-//        auto sweeps = prepareSweepClass();
 
-        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+        Obs.setSites(sites);
+        Obs.calc(psi,"N", 44, 4.4);
 
-        ExpCon.addPoint("Starting DMRG");
-        dmrg(psi,H,sweeps);
+//        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+//        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+//        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+//        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+//        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+//        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
 
-        ExpCon.addPoint("Output data");
-        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
-        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
-        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
-        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
-        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
-        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
-        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
+//        ExpCon.addPoint("Starting DMRG");
+//        dmrg(psi,H,sweeps);
+
+//        ExpCon.addPoint("Output data");
+//        std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
+//        std::cout << "  N: " << calculateN(sites, psi) << std::endl;
+//        std::cout << "  N dublon: " << calculateNd(sites, psi) << std::endl;
+//        std::cout << "  Sz_0: " << calculateSz0(sites, psi) << std::endl;
+//        std::cout << "  Sz_1: " << calculateSz1(sites, psi) << std::endl;
+//        std::cout << "  Sz_t: " << calculateSzt(sites, psi) << std::endl;
+//        std::cout << "  MaxLinkDim: " << maxLinkDim(psi) << std::endl;
     };
 
     Experiments("DmrgWithCorrelations") = [](){
         ExpCon.addPoint("Initialization");
 
-        seedRNG(1);
-        auto sites = KH( getI("L") );
-        auto psi = prepareInitState(sites);
-        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
-        auto sweeps = prepareSweepClass();
+        auto [sites,psi,H,sweeps] = prepareExpBasic();
 
         std::cout << "  Energy: " << std::real(innerC(psi,H,psi)) << std::endl;
         std::cout << "  N: " << calculateN(sites, psi) << std::endl;
@@ -78,11 +71,7 @@ int main(int argc, char *argv[])
     Experiments("timeEv") = [](){
         ExpCon.addPoint("Initialization");
 
-        seedRNG(1);
-        auto sites = KH( getI("L") );
-        auto psi = prepareInitState(sites);
-        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
-        auto sweeps = prepareSweepClass();
+        auto [sites,psi,H,sweeps] = prepareExpBasic();
 
         std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
         std::cout << "  N: " << calculateN(sites, psi) << std::endl;
@@ -142,6 +131,7 @@ int main(int argc, char *argv[])
     Params.add("basisExtSteps","int","2");
 
     Params.set(argc,argv);
+    prepareObservables();
     Experiments.run();
 
     return 0;

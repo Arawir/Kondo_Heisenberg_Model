@@ -5,6 +5,12 @@
 #include "kondo_heisenberg.h"
 #include <ctime>
 #include <functional>
+#include <complex>
+#include <typeinfo>
+
+typedef std::complex<double> cpx;
+#define im std::complex<double>{0.0,1.0}
+
 
 using namespace itensor;
 
@@ -272,6 +278,100 @@ private:
         timeLast = clock();
     }
 } ExpCon;
+///////////////////////////////////////////
+
+struct Observable
+{
+    std::string name;
+    MPO matrix;
+    bool wasGenerated=false;
+    std::function<MPO(const BasicSiteSet<KHSite> &sites)> generateMPO;
+    BasicSiteSet<KHSite> *sites = nullptr;
+
+    void operator = (std::function<MPO(const BasicSiteSet<KHSite> &sites)> generate)
+    {
+        generateMPO = generate;
+    }
+
+    void generateIfNeeded()
+    {
+        if(wasGenerated==false){
+            wasGenerated=true;
+            matrix = generateMPO(*sites);
+        }
+    }
+
+    cpx expectedValue(MPS psi)
+    {
+        return innerC(psi,matrix,psi);
+    }
+};
+
+
+class ObservableContainer
+{
+public:
+    std::vector<Observable> observables;
+
+
+    Observable& operator () (std::string name)
+    {
+        for(auto& obs : observables){
+            if(obs.name == name){ return obs; }
+        }
+        observables.push_back( Observable{name} );
+        return observables.back();
+    }
+
+    template<typename T,typename... Args>
+    void calc(MPS &psi, T val, Args... args)
+    {
+        writeObservableValue(val,psi);
+        calc(psi, args...) ;
+    }
+
+    void calc(MPS &psi)
+    {
+        std::cout << std::endl;
+    }
+
+    void setSites(BasicSiteSet<KHSite> &sites)
+    {
+        for(auto& obs : observables){
+            obs.sites = &sites;
+        }
+    }
+
+
+private:
+    Observable* observable(std::string name)
+    {
+        for(auto& obs : observables){
+            if(obs.name == name){ return &obs; }
+        }
+        std::cerr << "ERROR: unknown observable name!" << std::endl;
+        assert(false);
+        return nullptr;
+    }
+
+    void initObservablesIfNeeded()
+    {
+        for(auto& obs : observables){
+            obs.generateIfNeeded();
+        }
+    }
+
+    void writeObservableValue(std::string name, MPS &psi)
+    {
+        observable(name)->generateIfNeeded();
+        std::cout << observable(name)->expectedValue(psi) << " ";
+    }
+    void writeObservableValue(double val, MPS &psi){ std::cout << val << " "; }
+    void writeObservableValue(cpx val, MPS &psi){ std::cout << val << " "; }
+    void writeObservableValue(int val, MPS &psi){ std::cout << val << " "; }
+} Obs;
 
 #endif // INTERFACE
+
+
 
