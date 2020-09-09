@@ -13,11 +13,12 @@ int main(int argc, char *argv[])
     Experiments("Dmrg") = [](){
         ExpCon.addPoint("Initialization");
 
-        seedRNG(1);
-        auto sites = KH( getI("L") );
-        auto psi = prepareInitState(sites);
-        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
-        auto sweeps = prepareSweepClass();
+        auto [sites,psi,H,sweeps] = prepareExpBasic();
+//        seedRNG(1);
+//        auto sites = KH( getI("L") );
+//        auto psi = prepareInitState(sites);
+//        auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
+//        auto sweeps = prepareSweepClass();
 
         std::cout << "  Energy: " << real(innerC(psi,H,psi)) << std::endl;
         std::cout << "  N: " << calculateN(sites, psi) << std::endl;

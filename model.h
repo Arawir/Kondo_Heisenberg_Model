@@ -7,6 +7,7 @@
 using namespace itensor;
 
 
+
 Sweeps prepareSweepClass()
 {
     auto sweeps = Sweeps(Args::global().getInt("sweeps"));
@@ -53,6 +54,17 @@ MPO KHHamiltonian(KH &sites,
     }
 
     return toMPO(ampo);
+}
+
+std::tuple<KH,MPS,MPO,Sweeps> prepareExpBasic()
+{
+    seedRNG(1);
+    auto sites = KH( getI("L") );
+    auto psi = prepareInitState(sites);
+    auto H = KHHamiltonian(sites,getI("L"),getD("thop"),getD("K"),getD("Jh"),getD("Mu"),getD("U"));
+    auto sweeps = prepareSweepClass();
+
+    return std::make_tuple( sites,psi,H,sweeps );
 }
 
 auto generateTrotterGates(KH &sites,
