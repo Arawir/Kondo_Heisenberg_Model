@@ -5,8 +5,6 @@
 #include "kondo_heisenberg.h"
 #include <ctime>
 #include <functional>
-//#include <complex>
-//#include <typeinfo>
 
 typedef std::complex<double> cpx;
 #define im std::complex<double>{0.0,1.0}
@@ -15,11 +13,6 @@ typedef std::complex<double> cpx;
 using namespace itensor;
 
 double getD(std::string data)
-{
-    return Args::global().getReal(data);
-}
-
-double getR(std::string data)
 {
     return Args::global().getReal(data);
 }
@@ -168,7 +161,7 @@ std::vector<std::string> parseInitState(std::string str)
     return state;
 }
 
-itensor::MPS prepareInitState(KH &sites)
+itensor::MPS prepareInitState(auto &sites)
 {
     if( (Args::global().getString("state")=="random")||(Args::global().getString("state")=="r")){
         auto state = itensor::InitState(sites);
@@ -279,7 +272,6 @@ struct Observable
         return innerC(psi,matrix,psi);
     }
 };
-
 
 enum class oMode{
     a, b, c
