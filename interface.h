@@ -5,8 +5,8 @@
 #include "kondo_heisenberg.h"
 #include <ctime>
 #include <functional>
-#include <complex>
-#include <typeinfo>
+//#include <complex>
+//#include <typeinfo>
 
 typedef std::complex<double> cpx;
 #define im std::complex<double>{0.0,1.0}
@@ -244,40 +244,7 @@ public:
 
 } Experiments;
 
-class Controller
-{
-public:
-    clock_t  time0, timeLast;
-public:
 
-    Controller() :
-        time0{ clock() }
-      , timeLast{ clock() }
-    {
-
-    }
-    ~Controller() = default;
-
-    void addPoint(std::string text)
-    {
-        writePointInfo(text);
-    }
-
-private:
-    void writePointInfo(std::string text)
-    {
-        std::cout << "--------------------";
-        std::cout << text;
-        for(int i=0; i<60-(int)text.size(); i++){
-           std::cout << "-";
-        }
-
-        std::cout << "(" << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s],"
-                  << (clock()-timeLast)/(double)CLOCKS_PER_SEC << " [s])";
-        std::cout << std::endl;
-        timeLast = clock();
-    }
-} ExpCon;
 ///////////////////////////////////////////
 
 struct Observable
@@ -314,11 +281,19 @@ struct Observable
 };
 
 
+enum class oMode{
+    a, b, c
+};
+
 class ObservableContainer
 {
 public:
     std::vector<Observable> observables;
+    oMode mode = oMode::a;
 
+public:
+    ObservableContainer() = default;
+    ~ObservableContainer() = default;
 
     Observable& operator () (std::string name)
     {
@@ -332,7 +307,16 @@ public:
     template<typename T,typename... Args>
     void calc(MPS &psi, T val, Args... args)
     {
+        std::cout << " ";
         writeObservableValue(val,psi);
+        if(mode==oMode::c){ std::cout << std::endl; }
+        calc(psi, args...) ;
+    }
+
+    template<typename... Args>
+    void calc(MPS &psi, oMode val, Args... args)
+    {
+        mode = val;
         calc(psi, args...) ;
     }
 
@@ -370,12 +354,50 @@ private:
     void writeObservableValue(std::string name, MPS &psi)
     {
         observable(name)->generateIfNeeded();
-        std::cout << observable(name)->expectedValue(psi).real() << " ";
+        if(mode==oMode::b || mode==oMode::c){ std::cout << name << "= "; }
+        std::cout << observable(name)->expectedValue(psi).real();
     }
-    void writeObservableValue(double val, MPS &psi){ std::cout << val << " "; }
-    void writeObservableValue(cpx val, MPS &psi){ std::cout << val << " "; }
-    void writeObservableValue(int val, MPS &psi){ std::cout << val << " "; }
-} Obs;
+    void writeObservableValue(double val, MPS &psi){ std::cout << val; }
+    void writeObservableValue(cpx val, MPS &psi){ std::cout << val; }
+    void writeObservableValue(int val, MPS &psi){ std::cout << val; }
+};
+
+/////////////////////////////////////////////////
+class Controller : public ObservableContainer
+{
+public:
+    clock_t  time0, timeLast;
+public:
+
+    Controller() :
+        ObservableContainer{ }
+      , time0{ clock() }
+      , timeLast{ clock() }
+    {
+
+    }
+    ~Controller() = default;
+
+    void addPoint(std::string text)
+    {
+        writePointInfo(text);
+    }
+
+private:
+    void writePointInfo(std::string text)
+    {
+        std::cout << "--------------------";
+        std::cout << text;
+        for(int i=0; i<60-(int)text.size(); i++){
+           std::cout << "-";
+        }
+
+        std::cout << "(" << (clock()-time0)/(double)CLOCKS_PER_SEC << " [s],"
+                  << (clock()-timeLast)/(double)CLOCKS_PER_SEC << " [s])";
+        std::cout << std::endl;
+        timeLast = clock();
+    }
+} ExpCon;
 
 #endif // INTERFACE
 
