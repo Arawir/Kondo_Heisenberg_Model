@@ -110,6 +110,39 @@ void prepareObservables()
 
         return toMPO(N);
     };
+    ExpCon("Sz1_1:L") = [](const BasicSiteSet<KHSite> &sites){
+        std::vector<MPO> out;
+
+        for(int i=1; i<=sites.length(); i++){
+            auto ampo = AutoMPO(sites);
+            ampo += 1.0,"Sz1",i;
+            out.push_back( toMPO(ampo) );
+        }
+
+        return out;
+    };
+    ExpCon("Sz0_1:L") = [](const BasicSiteSet<KHSite> &sites){
+        std::vector<MPO> out;
+
+        for(int i=1; i<=sites.length(); i++){
+            auto ampo = AutoMPO(sites);
+            ampo += 1.0,"Sz0",i;
+            out.push_back( toMPO(ampo) );
+        }
+
+        return out;
+    };
+    ExpCon("N1:L") = [](const BasicSiteSet<KHSite> &sites){
+        std::vector<MPO> out;
+
+        for(int i=1; i<=sites.length(); i++){
+            auto ampo = AutoMPO(sites);
+            ampo += 1.0,"Ntot",i;
+            out.push_back( toMPO(ampo) );
+        }
+
+        return out;
+    };
 }
 
 std::tuple<KH,MPS,MPO,Sweeps> prepareExpBasic()

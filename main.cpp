@@ -46,20 +46,18 @@ int main(int argc, char *argv[])
         ExpCon.addPoint("Initialization");
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
-        ExpCon.calc(psi,"E","N","Nd","Sz0","Sz1","Szt");
+        ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt");
 
         ExpCon.addPoint("Starting TDVP");
-        double energy = innerC(psi,H,psi).real();
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            std::cout << "  t: ";
-            ExpCon.calc(psi,time,energy,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
+            ExpCon.calc(psi,oMode::b,"t:",time,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi),"Sz1_1:L","Sz0_1:L","N1:L");
 
             if(time<getI("basisExtSteps")*getD("dtime")){
                std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
                addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
             }
-            energy = tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",1});
+            tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
         }
         ExpCon.addPoint("Finish");
     };

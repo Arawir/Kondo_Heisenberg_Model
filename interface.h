@@ -243,19 +243,27 @@ public:
 struct Observable
 {
     std::string name;
-    MPO matrix;
+    std::vector<MPO> matrix;
     bool wasGenerated=false;
-    std::function<MPO(const BasicSiteSet<KHSite> &sites)> generateMPO;
-    BasicSiteSet<KHSite> *sites = nullptr;
+    bool useMultMpos = false;
+    std::function<MPO(const KH &sites)> generateMPO;
+    std::function<std::vector<MPO>(const KH &sites)> generateMPOs;
+    KH *sites = nullptr;
 
-    void operator = (std::function<MPO(const BasicSiteSet<KHSite> &sites)> generate)
+    void operator = (std::function<MPO(const KH &sites)> generate)
     {
         generateMPO = generate;
     }
 
+    void operator = (std::function<std::vector<MPO>(const KH &sites)> generate)
+    {
+        useMultMpos=true;
+        generateMPOs = generate;
+    }
+
     void operator =  (MPO &nMatrix)
     {
-        matrix = nMatrix;
+        matrix.push_back( nMatrix );
         wasGenerated=true;
     }
 
@@ -263,13 +271,21 @@ struct Observable
     {
         if(wasGenerated==false){
             wasGenerated=true;
-            matrix = generateMPO(*sites);
+            if(!useMultMpos){
+                matrix.push_back( generateMPO(*sites) );
+            } else {
+                matrix = generateMPOs(*sites);
+            }
         }
     }
 
-    cpx expectedValue(MPS psi)
+    std::vector<cpx> expectedValue(MPS psi)
     {
-        return innerC(psi,matrix,psi);
+        std::vector<cpx> out;
+        for(auto &m : matrix){
+            out.push_back( innerC(psi,m,psi) );
+        }
+        return out;
     }
 };
 
@@ -317,7 +333,7 @@ public:
         std::cout << std::endl;
     }
 
-    void setSites(BasicSiteSet<KHSite> &sites)
+    void setSites(KH &sites)
     {
         for(auto& obs : observables){
             obs.sites = &sites;
@@ -335,6 +351,13 @@ private:
         assert(false);
         return nullptr;
     }
+    bool exists(std::string name)
+    {
+        for(auto& obs : observables){
+            if(obs.name == name){ return true; }
+        }
+        return false;
+    }
 
     void initObservablesIfNeeded()
     {
@@ -345,9 +368,15 @@ private:
 
     void writeObservableValue(std::string name, MPS &psi)
     {
-        observable(name)->generateIfNeeded();
-        if(mode==oMode::b || mode==oMode::c){ std::cout << name << "= "; }
-        std::cout << observable(name)->expectedValue(psi).real();
+        if( exists(name) == true){
+            observable(name)->generateIfNeeded();
+            if(mode==oMode::b || mode==oMode::c){ std::cout << name << "= "; }
+            for(auto val : observable(name)->expectedValue(psi)){
+                std::cout << val.real() << " ";
+            }
+        } else {
+            std::cout << name;
+        }
     }
     void writeObservableValue(double val, MPS &psi){ std::cout << val; }
     void writeObservableValue(cpx val, MPS &psi){ std::cout << val; }
