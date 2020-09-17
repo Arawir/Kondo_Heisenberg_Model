@@ -1,0 +1,6 @@
+#!/bin/bash
+
+qsub -v L='24',cutoff='1E-8' -N L24 run_stress_test
+
+
+

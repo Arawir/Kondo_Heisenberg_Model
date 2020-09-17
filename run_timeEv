@@ -1,0 +1,16 @@
+#PBS -S /bin/bash
+#PBS -q main
+#PBS -l walltime=96:10:00
+#PBS -l select=1:ncpus=1:mem=56GB
+
+cd $PBS_O_WORKDIR
+
+echo "U: ${U}";
+echo "dtime: ${dtime}";
+echo "maxDim: ${maxDim}";
+echo "cutoff: ${cutoff}";
+ 
+./kondo_heisenberg_model $(cat input) cutoff=${cutoff} dtime=${dtime} maxDim=${maxDim} U=${U} K=4*0.15*0.15/${U} Jh=0.25*${U} > U${U}dT${dtime}dim${maxDim}E${cutoff:2:3}.data
+
+qstat -f $PBS_JOBID | grep resources_used.vmem
+qstat -f $PBS_JOBID | grep resources_used.walltime
