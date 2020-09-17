@@ -1,6 +1,39 @@
 #!/bin/bash
 
-qsub -v L='24',cutoff='1E-8' -N L24 run_stress_test
+qsub -v U='1.05',dtime='0.01',maxDim='100',cutoff='1E-6' -N L24U1.05dT0.01dim100E-6 run_timeEv
+qsub -v U='1.05',dtime='0.01',maxDim='100',cutoff='1E-8' -N L24U1.05dT0.01dim100E-8 run_timeEv
+qsub -v U='1.05',dtime='0.01',maxDim='100',cutoff='1E-12' -N L24U1.05dT0.01dim100E-12 run_timeEv
+
+qsub -v U='1.05',dtime='0.01',maxDim='400',cutoff='1E-6' -N L24U1.05dT0.01dim400E-6 run_timeEv
+qsub -v U='1.05',dtime='0.01',maxDim='800',cutoff='1E-8' -N L24U1.05dT0.01dim800E-8 run_timeEv
+qsub -v U='1.05',dtime='0.01',maxDim='1200',cutoff='1E-12' -N L24U1.05dT0.01dim1200E-12 run_timeEv
+
+qsub -v U='1.05',dtime='0.01',maxDim='400',cutoff='1E-8' -N L24U1.05dT0.01dim400E-8 run_timeEv
+qsub -v U='1.05',dtime='0.05',maxDim='400',cutoff='1E-8' -N L24U1.05dT0.05dim400E-8 run_timeEv
+qsub -v U='1.05',dtime='0.1',maxDim='400',cutoff='1E-8' -N L24U1.05dT0.1dim400E-8 run_timeEv
+
+qsub -v U='2.1',dtime='0.01',maxDim='100',cutoff='1E-6' -N L24U2.1dT0.01dim100E-6 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='100',cutoff='1E-8' -N L24U2.1dT0.01dim100E-8 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='100',cutoff='1E-12' -N L24U2.1dT0.01dim100E-12 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='400',cutoff='1E-6' -N L24U2.1dT0.01dim400E-6 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='800',cutoff='1E-8' -N L24U2.1dT0.01dim800E-8 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='1200',cutoff='1E-12' -N L24U2.1dT0.01dim1200E-12 run_timeEv
+qsub -v U='2.1',dtime='0.01',maxDim='400',cutoff='1E-8' -N L24U2.1dT0.01dim400E-8 run_timeEv
+qsub -v U='2.1',dtime='0.05',maxDim='400',cutoff='1E-8' -N L24U2.1dT0.05dim400E-8 run_timeEv
+qsub -v U='2.1',dtime='0.1',maxDim='400',cutoff='1E-8' -N L24U2.1dT0.1dim400E-8 run_timeEv
+
+qsub -v U='4.2',dtime='0.01',maxDim='100',cutoff='1E-6' -N L24U4.2dT0.01dim100E-6 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='100',cutoff='1E-8' -N L24U4.2dT0.01dim100E-8 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='100',cutoff='1E-12' -N L24U4.2dT0.01dim100E-12 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='400',cutoff='1E-6' -N L24U4.2dT0.01dim400E-6 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='800',cutoff='1E-8' -N L24U4.2dT0.01dim800E-8 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='1200',cutoff='1E-12' -N L24U4.2dT0.01dim1200E-12 run_timeEv
+qsub -v U='4.2',dtime='0.01',maxDim='400',cutoff='1E-8' -N L24U4.2dT0.01dim400E-8 run_timeEv
+qsub -v U='4.2',dtime='0.05',maxDim='400',cutoff='1E-8' -N L24U4.2dT0.05dim400E-8 run_timeEv
+qsub -v U='4.2',dtime='0.1',maxDim='400',cutoff='1E-8' -N L24U4.2dT0.1dim400E-8 run_timeEv
+
+
+
 
 
 

@@ -10,7 +10,7 @@ echo "dtime: ${dtime}";
 echo "maxDim: ${maxDim}";
 echo "cutoff: ${cutoff}";
  
-./kondo_heisenberg_model $(cat input) cutoff=${cutoff} dtime=${dtime} maxDim=${maxDim} U=${U} K=4*0.15*0.15/${U} Jh=0.25*${U} > U${U}dT${dtime}dim${maxDim}E${cutoff:2:3}.data
+./kondo_heisenberg_model $(cat input) cutoff=${cutoff} dtime=${dtime} maxDim=${maxDim} U=${U} K=4*0.15*0.15/${U} Jh=0.25*${U} > L24U${U}dT${dtime}dim${maxDim}E${cutoff:2:3}.data
 
 qstat -f $PBS_JOBID | grep resources_used.vmem
 qstat -f $PBS_JOBID | grep resources_used.walltime
