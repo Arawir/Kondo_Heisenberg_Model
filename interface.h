@@ -390,7 +390,14 @@ private:
             }
         } else if(name=="dim"){
             std::cout << "dim= " << maxLinkDim(psi);
-        } else if(name=="rtime"){
+        } else if(name=="mem"){
+            if(getB("PBSenable")==true){
+                std::string command = "qstat -fx " + std::to_string(getI("PBSjobid")) + " | grep  'vmem' | awk '{print $3}'";
+                std::cout << "mem= " << system(command.c_str());
+            } else {
+                std::cout << "mem= " << "unknown";
+            }
+        }  else if(name=="rtime"){
             std::cout << "rtime= " << (clock()-time0)/(double)CLOCKS_PER_SEC;
         } else {
             std::cout << name;

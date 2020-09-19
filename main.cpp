@@ -4,9 +4,9 @@
 #include "itensor/util/print_macro.h"
 #include "basisextension.h"
 
-void tdvpStepWithBasisExtensionIfNeeded(MPS psi, MPO H, double dTime, Sweeps sweeps)
+void tdvpStepWithBasisExtensionIfNeeded(MPS &psi, MPO &H, double dTime, Sweeps &sweeps)
 {
-    if(maxLinkDim(psi)<getI("maxdim")/2){
+    if(maxLinkDim(psi)<10){
        std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
        addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
     }
@@ -17,8 +17,6 @@ void tdvpStepWithBasisExtensionIfNeeded(MPS psi, MPO H, double dTime, Sweeps swe
 int main(int argc, char *argv[])
 {
     Experiments("Dmrg") = [](){
-
-        ExpCon.addPoint("Initialization");
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
         ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt");
@@ -27,12 +25,10 @@ int main(int argc, char *argv[])
         dmrg(psi,H,sweeps);
 
         ExpCon.addPoint("Output data");
-        ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
+        ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt","dim");
     };
 
     Experiments("DmrgWithCorrelations") = [](){
-
-        ExpCon.addPoint("Initialization");
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
         ExpCon.calc(psi, oMode::a, "E","N","Nd","Sz0","Sz1","Szt");
@@ -41,7 +37,7 @@ int main(int argc, char *argv[])
         dmrg(psi,H,sweeps);
 
         ExpCon.addPoint("Output data");
-        ExpCon.calc(psi,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi));
+        ExpCon.calc(psi,"E","N","Nd","Sz0","Sz1","Szt","dim");
         calculateCorrelationMatrixSz(sites,psi, "Sz0");
         calculateCorrelationMatrixSz(sites,psi, "Sz1");
         calculateCorrelationMatrixSz(sites,psi, "SzSz");
@@ -51,21 +47,14 @@ int main(int argc, char *argv[])
 
 
     Experiments("timeEv") = [](){
-
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
-        ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt");
 
         ExpCon.addPoint("Starting TDVP");
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L");
+            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L");
             tdvpStepWithBasisExtensionIfNeeded(psi,H,getD("dtime"),sweeps);
-//            if(time<getI("basisExtSteps")*getD("dtime")){
-//               std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
-//               addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
-//            }
-//            tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
         }
     };
 
@@ -96,9 +85,10 @@ int main(int argc, char *argv[])
     Params.add("exp","string","timeEv");
     Params.add("basisExtSteps","int","2");
 
+    Params.add("PBSenable","bool","0");
+    Params.add("PBSjobid","int","0");
+
     Params.set(argc,argv);
-
-
     prepareObservables();
     Experiments.run();
 
