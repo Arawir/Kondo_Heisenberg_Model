@@ -132,22 +132,62 @@ private:
 } Params;
 
 
+std::vector<std::string> separateSubBlocs(std::string str)
+{
+    std::vector<std::string> out{};
+    int i=0;
+    out.push_back("");
+    while(str[i]!='\0'){
+        if(str[i]=='-'){
+            out.push_back("");
+        } else {
+            out.back().append(std::string{str[i]});
+        }
+        i++;
+    }
+    return out;
+}
+
+int identifyMultiplayer(std::string data)
+{
+    if(data.find("L/")!=std::string::npos){
+        return getI("L")/atoi( data.substr(data.find("L/")+2).c_str() );
+    }
+    return atoi(data.c_str());
+}
+
+std::tuple<int,std::string> separateMultiplayer(std::string data)
+{
+    int multiplayer=1;
+    std::string state=data;
+    if(data.find("*")!=std::string::npos){
+        multiplayer = identifyMultiplayer( data.substr(0,data.find("*")) );
+        state = data.substr(data.find("*")+1);
+    }
+
+    return std::make_tuple( multiplayer,state );
+}
+
+std::vector<std::string> expandSubBlocs(std::vector<std::string> subBlocs)
+{
+    std::vector<std::string> out{};
+
+    for(auto subBlock : subBlocs){
+        auto [n,state] = separateMultiplayer(subBlock);
+        for(int i=0; i<n; i++){
+            out.push_back(state);
+        }
+    }
+    return out;
+}
 
 std::vector<std::string> parseInitState(std::string str)
 {
     int L = Params.getInt("L");
 
-    std::vector<std::string> state{};
-    int i=0;
-    state.push_back("");
-    while(str[i]!='\0'){
-        if(str[i]=='-'){
-            state.push_back("");
-        } else {
-            state.back().append(std::string{str[i]});
-        }
-        i++;
-    }
+    std::vector<std::string> subBlocs = separateSubBlocs(str);
+    std::vector<std::string> state = expandSubBlocs(subBlocs);
+
 
     if(state.size()==0){
         std::cerr << "  Init state is not delcared!" << std::endl;
@@ -160,6 +200,8 @@ std::vector<std::string> parseInitState(std::string str)
     }
     return state;
 }
+
+
 
 itensor::MPS prepareInitState(auto &sites)
 {
@@ -174,10 +216,14 @@ itensor::MPS prepareInitState(auto &sites)
     std::vector<std::string> initState = parseInitState(Args::global().getString("state"));
     int L = Params.getInt("L");
 
+
+
     auto state = itensor::InitState(sites);
-    for(int i=1; i<=L; i++){
-       state.set(i,initState[i-1]);
+    for(int i=1;i<=L;i++){
+        state.set(i,initState[i-1]);
+        std::cout << initState[i-1] << "-";
     }
+    std::cout << std::endl;
 
     return itensor::MPS(state);
 }
