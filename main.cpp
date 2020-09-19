@@ -63,32 +63,35 @@ int main(int argc, char *argv[])
     };
 
 
-    Params.add("thop","double","0.0");
-    Params.add("U","double","0.0");
-    Params.add("K","double","0.0");
-    Params.add("Jh","double","0.0");
+    Params.add("thop","double","0.5");
+    Params.add("U","double","2.1");
+    Params.add("Jh","double","0.525");
+    Params.add("K","double","0.042857143");
+
     Params.add("Mu","double","0.0");
 
-    Params.add("L","int","4");
+    Params.add("L","int","24");
     Params.add("PBC","bool","0");
 
     Params.add("Silent","bool","1");
-    Params.add("cutoff","double","1E-6");
+    Params.add("cutoff","double","1E-8");
     Params.add("sweeps","int","4");
     Params.add("minDim","int","1");
     Params.add("maxDim","int","100");
     Params.add("niter","int","10");
-    Params.add("state","string","ud-du");
+    Params.add("state","string","L/2*uu-L/2*dd");
 
-    Params.add("ConserveN","bool","0");
+    Params.add("ConserveN","bool","1");
     Params.add("ConserveSz","bool","0");
     Params.add("maxtime","double","0");
     Params.add("dtime","double","0");
 
-    Params.add("exp","string","1");
+    Params.add("exp","string","timeEv");
     Params.add("basisExtSteps","int","2");
 
     Params.set(argc,argv);
+
+
     prepareObservables();
     Experiments.run();
 
