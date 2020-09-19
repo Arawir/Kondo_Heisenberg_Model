@@ -245,43 +245,7 @@ struct Experiment
     }
 };
 
-class ExperimentsClass
-{
-private:
-    std::vector<Experiment> experiments;
-public:
-    ExperimentsClass() :
-        experiments {  }
-    {
 
-    }
-    ~ExperimentsClass() = default;
-
-    Experiment& operator () (std::string name)
-    {
-        for(auto& exp : experiments){
-            if(exp.name == name){ return exp; }
-        }
-        experiments.push_back( Experiment{name} );
-        return experiments.back();
-    }
-
-    void run()
-    {
-        experiment(getS("exp"))->experiment();
-    }
-
-    Experiment* experiment(std::string name)
-    {
-        for(auto& exp : experiments){
-            if(exp.name == name){ return &exp; }
-        }
-        std::cerr << "ERROR: unknown experiment name!" << std::endl;
-        assert(false);
-        return nullptr;
-    }
-
-} Experiments;
 
 
 ///////////////////////////////////////////
@@ -344,9 +308,13 @@ class ObservableContainer
 public:
     std::vector<Observable> observables;
     oMode mode = oMode::a;
+    clock_t  time0, timeLast;
 
 public:
-    ObservableContainer() = default;
+    ObservableContainer() :
+        time0{ clock() }
+        , timeLast{ clock() }
+    { }
     ~ObservableContainer() = default;
 
     Observable& operator () (std::string name)
@@ -420,6 +388,10 @@ private:
             for(auto val : observable(name)->expectedValue(psi)){
                 std::cout << val.real() << " ";
             }
+        } else if(name=="dim"){
+            std::cout << "dim= " << maxLinkDim(psi);
+        } else if(name=="rtime"){
+            std::cout << "rtime= " << (clock()-time0)/(double)CLOCKS_PER_SEC;
         } else {
             std::cout << name;
         }
@@ -432,14 +404,11 @@ private:
 /////////////////////////////////////////////////
 class Controller : public ObservableContainer
 {
-public:
-    clock_t  time0, timeLast;
+
 public:
 
     Controller() :
         ObservableContainer{ }
-      , time0{ clock() }
-      , timeLast{ clock() }
     {
 
     }
@@ -465,6 +434,47 @@ private:
         timeLast = clock();
     }
 } ExpCon;
+
+////////////////////////////////////////////////
+class ExperimentsClass
+{
+private:
+    std::vector<Experiment> experiments;
+public:
+    ExperimentsClass() :
+        experiments {  }
+    {
+
+    }
+    ~ExperimentsClass() = default;
+
+    Experiment& operator () (std::string name)
+    {
+        for(auto& exp : experiments){
+            if(exp.name == name){ return exp; }
+        }
+        experiments.push_back( Experiment{name} );
+        return experiments.back();
+    }
+
+    void run()
+    {
+        ExpCon.addPoint("Start");
+        experiment(getS("exp"))->experiment();
+        ExpCon.addPoint("Finish");
+    }
+
+    Experiment* experiment(std::string name)
+    {
+        for(auto& exp : experiments){
+            if(exp.name == name){ return &exp; }
+        }
+        std::cerr << "ERROR: unknown experiment name!" << std::endl;
+        assert(false);
+        return nullptr;
+    }
+
+} Experiments;
 
 #endif // INTERFACE
 

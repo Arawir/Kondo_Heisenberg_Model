@@ -4,6 +4,14 @@
 #include "itensor/util/print_macro.h"
 #include "basisextension.h"
 
+void tdvpStepWithBasisExtensionIfNeeded(MPS psi, MPO H, double dTime, Sweeps sweeps)
+{
+    if(maxLinkDim(psi)<getI("maxdim")/2){
+       std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
+       addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
+    }
+    tdvp(psi,H,im*dTime,sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
+}
 
 
 int main(int argc, char *argv[])
@@ -41,9 +49,9 @@ int main(int argc, char *argv[])
         calculateCorrelationMatrixSz(sites,psi, "SpSm");
     };
 
+
     Experiments("timeEv") = [](){
 
-        ExpCon.addPoint("Initialization");
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
         ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt");
@@ -51,21 +59,20 @@ int main(int argc, char *argv[])
         ExpCon.addPoint("Starting TDVP");
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            ExpCon.calc(psi,oMode::b,"t:",time,"E","N","Nd","Sz0","Sz1","Szt",maxLinkDim(psi),"Sz1_1:L","Sz0_1:L","N1:L");
-
-            if(time<getI("basisExtSteps")*getD("dtime")){
-               std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
-               addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
-            }
-            tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
+            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L");
+            tdvpStepWithBasisExtensionIfNeeded(psi,H,getD("dtime"),sweeps);
+//            if(time<getI("basisExtSteps")*getD("dtime")){
+//               std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
+//               addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
+//            }
+//            tdvp(psi,H,im*getD("dtime"),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
         }
-        ExpCon.addPoint("Finish");
     };
 
 
     Params.add("thop","double","0.5");
     Params.add("U","double","2.1");
-    Params.add("Jh","double","0.525");
+    Params.add("Jh","double","-1.05");
     Params.add("K","double","0.042857143");
 
     Params.add("Mu","double","0.0");
