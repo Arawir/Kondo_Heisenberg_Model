@@ -5,6 +5,12 @@
 #include "kondo_heisenberg.h"
 #include <ctime>
 #include <functional>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
 
 typedef std::complex<double> cpx;
 #define im std::complex<double>{0.0,1.0}
@@ -246,7 +252,18 @@ struct Experiment
 };
 
 
-
+std::string exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
 
 ///////////////////////////////////////////
 
@@ -393,7 +410,7 @@ private:
         } else if(name=="mem"){
             if(getB("PBSenable")==true){
                 std::string command = "qstat -fx " + std::to_string(getI("PBSjobid")) + " | grep  'vmem' | awk '{print $3}'";
-                std::cout << "mem= " << system(command.c_str());
+                std::cout << "mem= " << exec(command.c_str());
             } else {
                 std::cout << "mem= " << "unknown";
             }
