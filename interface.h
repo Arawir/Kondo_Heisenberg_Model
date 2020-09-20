@@ -16,6 +16,12 @@ typedef std::complex<double> cpx;
 #define im std::complex<double>{0.0,1.0}
 
 
+inline void massert(std::string info)
+{
+    std::cerr << info << std::endl;
+    assert(false);
+}
+
 using namespace itensor;
 
 double getD(std::string data)
@@ -132,7 +138,7 @@ private:
         for(auto &param : params){
             if(param.name == name) return &param;
         }
-        assert("ERROR: Wrong parameter name (" +name + ")!");
+        massert("ERROR: Wrong parameter name (" +name + ")!");
         return nullptr;
     }
 } Params;
@@ -378,8 +384,7 @@ private:
         for(auto& obs : observables){
             if(obs.name == name){ return &obs; }
         }
-        std::cerr << "ERROR: unknown observable name!" << std::endl;
-        assert(false);
+        massert("ERROR: unknown observable name!");
         return nullptr;
     }
     bool exists(std::string name)
@@ -493,8 +498,7 @@ public:
         for(auto& exp : experiments){
             if(exp.name == name){ return &exp; }
         }
-        std::cerr << "ERROR: unknown experiment name!" << std::endl;
-        assert(false);
+        massert("ERROR: unknown experiment name!");
         return nullptr;
     }
 
