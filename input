@@ -8,5 +8,5 @@ ConserveSz=0
 ConserveN=1
 state=uu-uu-uu-uu-uu-uu-uu-uu-uu-uu-uu-uu-dd-dd-dd-dd-dd-dd-dd-dd-dd-dd-dd-dd
 dtime=0.1
-maxtime=100
+maxtime=1
 
