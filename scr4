@@ -1,0 +1,17 @@
+#PBS -S /bin/bash
+#PBS -q main
+#PBS -l walltime=48:00:00
+#PBS -l select=1:ncpus=6:mem=4GB
+#PBS -N 2_4KH
+
+cd $PBS_O_WORKDIR
+
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-4 maxDim=40 > 2_4aKH.data &
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-4 maxDim=100 > 2_4bKH.data &
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-4 maxDim=200 > 2_4cKH.data &
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-8 maxDim=40 > 2_4dKH.data &
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-8 maxDim=100 > 2_4eKH.data &
+./KondoHeisenberg PBSenable=0 PBSjobid=$PBS_JOBID dtime=0.42857143 cutoff=1E-8 maxDim=200 > 2_4fKH.data &
+
+wait
+

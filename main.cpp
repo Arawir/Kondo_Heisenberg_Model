@@ -74,12 +74,12 @@ int main(int argc, char *argv[])
     Params.add("sweeps","int","4");
     Params.add("minDim","int","1");
     Params.add("maxDim","int","100");
-    Params.add("niter","int","10");
+    Params.add("niter","int","30");
     Params.add("state","string","L/2*uu-L/2*dd");
 
     Params.add("ConserveN","bool","1");
     Params.add("ConserveSz","bool","0");
-    Params.add("maxtime","double","0");
+    Params.add("maxtime","double","48");
     Params.add("dtime","double","0");
 
     Params.add("exp","string","timeEv");
