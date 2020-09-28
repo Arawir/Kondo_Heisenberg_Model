@@ -61,7 +61,6 @@ void prepareObservables()
 {
     ExpCon("N") = [](const BasicSiteSet<KHSite> &sites){
         auto N = AutoMPO(sites);
-
         for(int i=1; i<=getI("L"); i++){
             N += 1,"Ntot",i;
         }
@@ -138,6 +137,29 @@ void prepareObservables()
         for(int i=1; i<=sites.length(); i++){
             auto ampo = AutoMPO(sites);
             ampo += 1.0,"Ntot",i;
+            out.push_back( toMPO(ampo) );
+        }
+
+        return out;
+    };
+    ExpCon("Nd1:L") = [](const BasicSiteSet<KHSite> &sites){
+        std::vector<MPO> out;
+
+        for(int i=1; i<=sites.length(); i++){
+            auto ampo = AutoMPO(sites);
+            ampo += 1.0,"Nupdn",i;
+            out.push_back( toMPO(ampo) );
+        }
+
+        return out;
+    };
+    ExpCon("N21:L") = [](const BasicSiteSet<KHSite> &sites){
+        std::vector<MPO> out;
+
+        for(int i=1; i<=sites.length(); i++){
+            auto ampo = AutoMPO(sites);
+            ampo += 1.0,"Ntot",i;
+            ampo += 2.0,"Nupdn",i;
             out.push_back( toMPO(ampo) );
         }
 

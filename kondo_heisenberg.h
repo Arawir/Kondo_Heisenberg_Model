@@ -21,63 +21,40 @@ class KHSite
     KHSite(Args const& args = Args::global())
         {
         auto ts = TagSet("Site,Elec");
-        if(args.defined("SiteNumber"))
-            {
+
+        if(args.defined("SiteNumber")){
             ts.addTags("n="+str(args.getInt("SiteNumber")));
-            }
-        auto conserveQNs = args.getBool("ConserveQNs",true);
-        auto conserveNf = args.getBool("ConserveN",conserveQNs);
-        auto conserveSz = args.getBool("ConserveSz",conserveQNs);
-        if(conserveQNs || conserveNf || conserveSz)
-            {
-            if(conserveNf && conserveSz)
-                {
-                s = Index(QN({"Sz", 1},{"Nf",0,-1}),1,
-                          QN({"Sz", 2},{"Nf",1,-1}),1,
-                          QN({"Sz", 0},{"Nf",1,-1}),1,
-                          QN({"Sz", 1},{"Nf",2,-1}),1,
-                          QN({"Sz",-1},{"Nf",0,-1}),1,
-                          QN({"Sz", 0},{"Nf",1,-1}),1,
-                          QN({"Sz",-2},{"Nf",1,-1}),1,
-                          QN({"Sz",-1},{"Nf",2,-1}),1,Out,ts);
-                }
-            else if(conserveNf) // don't conserve Sz
-                {
-                s = Index(QN({"Nf",0,-1}),1, //0u
-                          QN({"Nf",1,-1}),1, //uu
-                          QN({"Nf",1,-1}),1, //du
-                          QN({"Nf",2,-1}),1, //2u
-                          QN({"Nf",0,-1}),1, //0d
-                          QN({"Nf",1,-1}),1, //ud
-                          QN({"Nf",1,-1}),1, //dd
-                          QN({"Nf",2,-1}),1,Out,ts); //2d
-                }
-            else if(conserveSz) //don't conserve Nf, only fermion parity
-                {
-                s = Index(QN({"Sz", 1},{"Pf",0,-2}),1,
-                          QN({"Sz", 2},{"Pf",1,-2}),1,
-                          QN({"Sz", 0},{"Pf",1,-2}),1,
-                          QN({"Sz", 1},{"Pf",0,-2}),1,
-                          QN({"Sz",-1},{"Pf",0,-2}),1,
-                          QN({"Sz", 0},{"Pf",1,-2}),1,
-                          QN({"Sz",-2},{"Pf",1,-2}),1,
-                          QN({"Sz",-1},{"Pf",0,-2}),1,Out,ts);
-                }
-            else
-                {
-                s = Index(QN({"Pf",0,-2}),1,
-                          QN({"Pf",1,-2}),1,
-                          QN({"Pf",1,-2}),1,
-                          QN({"Pf",0,-2}),1,
-                          QN({"Pf",0,-2}),1,
-                          QN({"Pf",1,-2}),1,
-                          QN({"Pf",1,-2}),1,
-                          QN({"Pf",0,-2}),1,Out,ts);
-                }
-            }
-        else
-            {
-            s = Index(8,ts);
+        }
+
+        if(args.getBool("ConserveN") && args.getBool("ConserveSz")) {
+            s = Index(QN({"Sz", 1},{"N",0,-1}),1,
+                      QN({"Sz", 2},{"N",1,-1}),1,
+                      QN({"Sz", 0},{"N",1,-1}),1,
+                      QN({"Sz", 1},{"N",2,-1}),1,
+                      QN({"Sz",-1},{"N",0,-1}),1,
+                      QN({"Sz", 0},{"N",1,-1}),1,
+                      QN({"Sz",-2},{"N",1,-1}),1,
+                      QN({"Sz",-1},{"N",2,-1}),1,Out,ts);
+            } else if(args.getBool("ConserveN")) {
+                s = Index(QN({"N",0,-1}),1, //0u
+                          QN({"N",1,-1}),1, //uu
+                          QN({"N",1,-1}),1, //du
+                          QN({"N",2,-1}),1, //2u
+                          QN({"N",0,-1}),1, //0d
+                          QN({"N",1,-1}),1, //ud
+                          QN({"N",1,-1}),1, //dd
+                          QN({"N",2,-1}),1,Out,ts); //2d
+            } else if(args.getBool("ConserveSz")) {
+                s = Index(QN({"Sz", 1}),1,
+                          QN({"Sz", 2}),1,
+                          QN({"Sz", 0}),1,
+                          QN({"Sz", 1}),1,
+                          QN({"Sz",-1}),1,
+                          QN({"Sz", 0}),1,
+                          QN({"Sz",-2}),1,
+                          QN({"Sz",-1}),1,Out,ts);
+            } else {
+                s = Index(8,ts);
             }
         }
 
@@ -321,7 +298,6 @@ class KHSite
         if(opname == "S+0")
             {
             Op.set(DnU,UpPU,1);
-
             Op.set(DnD,UpPD,1);
             }
         else

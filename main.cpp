@@ -10,7 +10,7 @@ void tdvpStepWithBasisExtensionIfNeeded(MPS &psi, MPO &H, double dTime, Sweeps &
        std::vector<Real> epsilonK = {getD("cutoff"),getD("cutoff"),getD("cutoff")};
        addBasis(psi,H,epsilonK,{"Cutoff",getD("cutoff"),"Method","DensityMatrix","KrylovOrd",4,"DoNormalize",true,"Quiet",true});
     }
-    tdvp(psi,H,im*dTime,sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
+    tdvp(psi,H,im*dTime/(double)sweeps.nsweep(),sweeps,{"DoNormalize",true,"Quiet",true,"NumCenter",2});
 }
 
 
@@ -53,16 +53,40 @@ int main(int argc, char *argv[])
         ExpCon.addPoint("Starting TDVP");
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L");
+            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
             tdvpStepWithBasisExtensionIfNeeded(psi,H,getD("dtime"),sweeps);
         }
     };
 
+    Experiments("timeEvGs") = [](){
+        auto [sites,psi,H,sweeps] = prepareExpBasic();
+        ExpCon.setSites(sites);ExpCon("E") = H;
 
-    Params.add("thop","double","0.5");
-    Params.add("U","double","2.1");
-    Params.add("Jh","double","-1.05");
-    Params.add("K","double","0.042857143");
+        auto ampo = AutoMPO(sites);
+        ampo += 1,"S+0",getI("L")/2;
+        ampo += 1,"S+1",getI("L")/2;
+        MPO OpSpinPlus = toMPO(ampo);
+
+        dmrg(psi,H,sweeps);
+        ExpCon.calc(psi,oMode::b,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+
+        ExpCon.addPoint("Apply OpSpinPlus");
+        auto psi2 = removeQNs(psi);
+        auto psi3 = applyMPO(OpSpinPlus,psi2,{"Method=","DensityMatrix","MaxDim=",100,"Cutoff=",1E-13,"Normalize=",true});
+        psi3.noPrime();
+
+        ExpCon.addPoint("Starting TDVP");
+        for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
+            ExpCon.calc(psi3,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+            tdvpStepWithBasisExtensionIfNeeded(psi3,H,getD("dtime"),sweeps);
+        }
+    };
+
+
+    Params.add("thop","double","1.0");
+    Params.add("U","double","1.0");
+    Params.add("Jh","double","0.0");
+    Params.add("K","double","1.0");
 
     Params.add("Mu","double","0.0");
 
@@ -75,15 +99,14 @@ int main(int argc, char *argv[])
     Params.add("minDim","int","1");
     Params.add("maxDim","int","100");
     Params.add("niter","int","30");
-    Params.add("state","string","L/2*uu-L/2*dd");
+    Params.add("state","string","uu-dd-uu-dd");
 
-    Params.add("ConserveN","bool","1");
+    Params.add("ConserveN","bool","0");
     Params.add("ConserveSz","bool","0");
-    Params.add("maxtime","double","48");
-    Params.add("dtime","double","0");
+    Params.add("maxtime","double","196.0");
+    Params.add("dtime","double","0.1");
 
-    Params.add("exp","string","timeEv");
-    Params.add("basisExtSteps","int","2");
+    Params.add("exp","string","timeEvGs");
 
     Params.add("PBSenable","bool","0");
     Params.add("PBSjobid","int","0");
