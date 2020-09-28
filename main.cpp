@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         ExpCon.addPoint("Starting TDVP");
 
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+            ExpCon.calc(psi,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","N21:L","Nd1:L");
             tdvpStepWithBasisExtensionIfNeeded(psi,H,getD("dtime"),sweeps);
         }
     };
@@ -84,10 +84,10 @@ int main(int argc, char *argv[])
     };
 
 
-    Params.add("thop","double","1.0");
-    Params.add("U","double","1.0");
+    Params.add("thop","double","0.5");
+    Params.add("U","double","2.1");
     Params.add("Jh","double","0.0");
-    Params.add("K","double","1.0");
+    Params.add("K","double","0.042857143");
 
     Params.add("Mu","double","0.0");
 
@@ -100,14 +100,14 @@ int main(int argc, char *argv[])
     Params.add("minDim","int","1");
     Params.add("maxDim","int","100");
     Params.add("niter","int","30");
-    Params.add("state","string","uu-dd-uu-dd");
+    Params.add("state","string","L/2*uu-L/2*dd");
 
     Params.add("ConserveN","bool","1");
     Params.add("ConserveSz","bool","0");
     Params.add("maxtime","double","196.0");
     Params.add("dtime","double","0.1");
 
-    Params.add("exp","string","timeEvGs");
+    Params.add("exp","string","timeEv");
 
     Params.add("PBSenable","bool","0");
     Params.add("PBSjobid","int","0");

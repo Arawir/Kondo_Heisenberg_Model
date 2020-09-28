@@ -1,23 +1,39 @@
 #PBS -S /bin/bash
 #PBS -q main
 #PBS -l walltime=167:59:59
-#PBS -l select=1:ncpus=12:mem=8GB
-#PBS -N 28_10_2KH
+#PBS -l select=1:ncpus=24:mem=12GB
+#PBS -N 28_10_3KH
 
 cd $PBS_O_WORKDIR
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=80 > 28_10_2/1.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=100 > 28_10_2/2.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=120 > 28_10_2/3.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=380 > 28_10_2/4.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=400 > 28_10_2/5.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=600 > 28_10_2/5.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.0 dtime=0.042857143 maxDim=80   > 28_10_3/1a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.0 dtime=0.42857143 maxDim=80    > 28_10_3/1b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.0 dtime=0.042857143 maxDim=100  > 28_10_3/1c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.0 dtime=0.42857143 maxDim=100   > 28_10_3/1d.data &
 
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=80 > 28_10_2/1.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=100 > 28_10_2/2.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=120 > 28_10_2/3.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=380 > 28_10_2/4.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=400 > 28_10_2/5.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=600 > 28_10_2/5.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.05 dtime=0.042857143 maxDim=80  > 28_10_3/2a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.05 dtime=0.42857143 maxDim=80   > 28_10_3/2b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.05 dtime=0.042857143 maxDim=100 > 28_10_3/2c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.05 dtime=0.42857143 maxDim=100  > 28_10_3/2d.data &
+
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.15 dtime=0.042857143 maxDim=80  > 28_10_3/3a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.15 dtime=0.42857143 maxDim=80   > 28_10_3/3b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.15 dtime=0.042857143 maxDim=100 > 28_10_3/3c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.15 dtime=0.42857143 maxDim=100  > 28_10_3/3d.data &
+
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.25 dtime=0.042857143 maxDim=80  > 28_10_3/4a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.25 dtime=0.42857143 maxDim=80   > 28_10_3/4b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.25 dtime=0.042857143 maxDim=100 > 28_10_3/4c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.25 dtime=0.42857143 maxDim=100  > 28_10_3/4d.data &
+
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.35 dtime=0.042857143 maxDim=80  > 28_10_3/5a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.35 dtime=0.42857143 maxDim=80   > 28_10_3/5b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.35 dtime=0.042857143 maxDim=100 > 28_10_3/5c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.35 dtime=0.42857143 maxDim=100  > 28_10_3/5d.data &
+
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.4 dtime=0.042857143 maxDim=80   > 28_10_3/6a.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.4 dtime=0.42857143 maxDim=80    > 28_10_3/6b.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.4 dtime=0.042857143 maxDim=100  > 28_10_3/6c.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID cutoff=1E-6 sweeps=1 Jh=0.4 dtime=0.42857143 maxDim=100   > 28_10_3/6d.data &
 
 wait
 
