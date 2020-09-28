@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
         ampo += 1,"S+1",getI("L")/2;
         MPO OpSpinPlus = toMPO(ampo);
 
+        ExpCon.addPoint("Starting DMRG");
         dmrg(psi,H,sweeps);
         ExpCon.calc(psi,oMode::b,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
 
