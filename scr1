@@ -1,16 +1,23 @@
 #PBS -S /bin/bash
 #PBS -q main
 #PBS -l walltime=167:59:59
-#PBS -l select=1:ncpus=6:mem=4GB
+#PBS -l select=1:ncpus=12:mem=8GB
 #PBS -N 28_10_2KH
 
 cd $PBS_O_WORKDIR
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-8 maxDim=80 > 28_10_2/1.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-8 maxDim=100 > 28_10_2/2.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-8 maxDim=120 > 28_10_2/3.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 dtime=0.05 cutoff=1E-8 maxDim=80 > 28_10_2/4.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 dtime=0.05 cutoff=1E-8 maxDim=100 > 28_10_2/5.data &
-./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 dtime=0.05 cutoff=1E-8 maxDim=120 > 28_10_2/6.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=80 > 28_10_2/1.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=100 > 28_10_2/2.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=120 > 28_10_2/3.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=380 > 28_10_2/4.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=400 > 28_10_2/5.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=600 > 28_10_2/5.data &
+
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=80 > 28_10_2/1.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=100 > 28_10_2/2.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=120 > 28_10_2/3.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=380 > 28_10_2/4.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=400 > 28_10_2/5.data &
+./KondoHeisenberg PBSenable=1 PBSjobid=$PBS_JOBID ConserveN=1 cutoff=1E-6 maxDim=600 > 28_10_2/5.data &
 
 wait
 

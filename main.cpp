@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     Params.add("niter","int","30");
     Params.add("state","string","uu-dd-uu-dd");
 
-    Params.add("ConserveN","bool","0");
+    Params.add("ConserveN","bool","1");
     Params.add("ConserveSz","bool","0");
     Params.add("maxtime","double","196.0");
     Params.add("dtime","double","0.1");
