@@ -78,256 +78,225 @@ class KHSite
     }
 
         ITensor
-        op(std::string const& opname,
-           Args const& args) const
+        op(std::string const& opname, Args const& args) const
         {
-        auto sP = prime(s);
+            auto sP = prime(s);
 
-        IndexVal eu(s(1)),
-                 euP(sP(1)),
-                 UpU(s(2)),
-                 UpPU(sP(2)),
-                 DnU(s(3)),
-                 DnPU(sP(3)),
-                 UDU(s(4)),
-                 UDPU(sP(4)),
-                EmD(s(5)),
-                EmPD(sP(5)),
-                UpD(s(6)),
-                UpPD(sP(6)),
-                DnD(s(7)),
-                DnPD(sP(7)),
-                UDD(s(8)),
-                UDPD(sP(8));
+            IndexVal eu(s(1)),
+                     euP(sP(1)),
+                     uu(s(2)),
+                     uuP(sP(2)),
+                     du(s(3)),
+                     duP(sP(3)),
+                     Du(s(4)),
+                     DuP(sP(4)),
+                    ed(s(5)),
+                    edP(sP(5)),
+                    ud(s(6)),
+                    udP(sP(6)),
+                    dd(s(7)),
+                    ddP(sP(7)),
+                    Dd(s(8)),
+                    DdP(sP(8));
 
-        ITensor Op(dag(s),sP);
+            ITensor Op(dag(s),sP);
 
-        if(opname == "Nup")
+            if(opname == "Nup"){
+                Op.set(uu,uuP,1);
+                Op.set(Du,DuP,1);
+                Op.set(ud,udP,1);
+                Op.set(Dd,DdP,1);
+            } else
+            if(opname == "Ndn"){
+                Op.set(du,duP,1);
+                Op.set(Du,DuP,1);
+                Op.set(dd,ddP,1);
+                Op.set(Dd,DdP,1);
+            } else
+            if(opname == "Nudn")
+                {
+                Op.set(Du,DuP,1);
+                Op.set(Dd,DdP,1);
+            } else
+            if(opname == "Ntot")
+                {
+                Op.set(uu,uuP,1);
+                Op.set(du,duP,1);
+                Op.set(Du,DuP,2);
+
+                Op.set(ud,udP,1);
+                Op.set(dd,ddP,1);
+                Op.set(Dd,DdP,2);
+            } else
+            if(opname == "Cup")
+                {
+                Op.set(uu,euP,1);
+                Op.set(Du,duP,1);
+
+                Op.set(ud,edP,1);
+                Op.set(Dd,ddP,1);
+            } else
+            if(opname == "Cdagup")
+                {
+                Op.set(eu,uuP,1);
+                Op.set(du,DuP,1);
+
+                Op.set(ed,udP,1);
+                Op.set(dd,DdP,1);
+            } else
+            if(opname == "Cdn")
+                {
+                Op.set(du,euP,1);
+                Op.set(Du,uuP,-1);
+
+                Op.set(dd,edP,1);
+                Op.set(Dd,udP,-1);
+            } else
+            if(opname == "Cdagdn")
+                {
+                Op.set(eu,duP,1);
+                Op.set(uu,DuP,-1);
+
+                Op.set(ed,ddP,1);
+                Op.set(ud,DdP,-1);
+            } else
+            if(opname == "Aup")
+                {
+                Op.set(uu,euP,1);
+                Op.set(Du,duP,1);
+
+                Op.set(ud,edP,1);
+                Op.set(Dd,ddP,1);
+            } else
+            if(opname == "Adagup")
+                {
+                Op.set(eu,uuP,1);
+                Op.set(du,DuP,1);
+
+                Op.set(ed,udP,1);
+                Op.set(dd,DdP,1);
+            } else
+            if(opname == "Adn")
+                {
+                Op.set(du,euP,1);
+                Op.set(Du,uuP,1);
+
+                Op.set(dd,edP,1);
+                Op.set(Dd,udP,1);
+            } else
+            if(opname == "Adagdn")
+                {
+                Op.set(eu,duP,1);
+                Op.set(uu,DuP,1);
+
+                Op.set(ed,ddP,1);
+                Op.set(ud,DdP,1);
+            } else
+            if(opname == "FermiPhase" || opname == "F")
+                {
+                Op.set(eu,euP,+1);
+                Op.set(uu,uuP,-1);
+                Op.set(du,duP,-1);
+                Op.set(Du,DuP,+1);
+
+                Op.set(ed,edP,+1);
+                Op.set(ud,udP,-1);
+                Op.set(dd,ddP,-1);
+                Op.set(Dd,DdP,+1);
+            } else
+            if(opname == "Fup")
+                {
+                Op.set(eu,euP,+1);
+                Op.set(uu,uuP,-1);
+                Op.set(du,duP,+1);
+                Op.set(Du,DuP,-1);
+
+                Op.set(ed,edP,+1);
+                Op.set(ud,udP,-1);
+                Op.set(dd,ddP,+1);
+                Op.set(Dd,DdP,-1);
+            } else
+            if(opname == "Fdn")
+                {
+                Op.set(eu,euP,+1);
+                Op.set(uu,uuP,+1);
+                Op.set(du,duP,-1);
+                Op.set(Du,DuP,-1);
+
+                Op.set(ed,edP,+1);
+                Op.set(ud,udP,+1);
+                Op.set(dd,ddP,-1);
+                Op.set(Dd,DdP,-1);
+            } else
+            if(opname == "Sz0")
+                {
+                Op.set(uu,uuP,+0.5);
+                Op.set(du,duP,-0.5);
+
+                Op.set(ud,udP,+0.5);
+                Op.set(dd,ddP,-0.5);
+            } else
+            if(opname == "Sz1")
             {
-            Op.set(UpU,UpPU,1);
-            Op.set(UDU,UDPU,1);
-            Op.set(UpD,UpPD,1);
-            Op.set(UDD,UDPD,1);
-            }
-        else
-        if(opname == "Ndn")
-            {
-            Op.set(DnU,DnPU,1);
-            Op.set(UDU,UDPU,1);
-            Op.set(DnD,DnPD,1);
-            Op.set(UDD,UDPD,1);
-            }
-        else
-        if(opname == "Nupdn")
-            {
-            Op.set(UDU,UDPU,1);
-            Op.set(UDD,UDPD,1);
-            }
-        else
-        if(opname == "Ntot")
-            {
-            Op.set(UpU,UpPU,1);
-            Op.set(DnU,DnPU,1);
-            Op.set(UDU,UDPU,2);
+                Op.set(eu,euP,+0.5);
+                Op.set(uu,uuP,+0.5);
+                Op.set(du,duP,+0.5);
+                Op.set(Du,DuP,+0.5);
 
-            Op.set(UpD,UpPD,1);
-            Op.set(DnD,DnPD,1);
-            Op.set(UDD,UDPD,2);
-            }
-        else
-        if(opname == "Cup")
+                Op.set(ed,edP,-0.5);
+                Op.set(ud,udP,-0.5);
+                Op.set(dd,ddP,-0.5);
+                Op.set(Dd,DdP,-0.5);
+            } else
+            if(opname == "S01")
             {
-            Op.set(UpU,euP,1);
-            Op.set(UDU,DnPU,1);
+                Op.set(uu,uuP,+0.25);
+                Op.set(du,duP,-0.25);
+                Op.set(ud,udP,-0.25);
+                Op.set(dd,ddP,+0.25);
 
-            Op.set(UpD,EmPD,1);
-            Op.set(UDD,DnPD,1);
-            }
-        else
-        if(opname == "Cdagup")
+                Op.set(ud,duP,0.5);
+                Op.set(du,udP,0.5);
+            } else
+            if(opname == "S+1")
             {
-            Op.set(eu,UpPU,1);
-            Op.set(DnU,UDPU,1);
+                Op.set(ed,euP,1);
+                Op.set(ud,uuP,1);
+                Op.set(dd,duP,1);
+                Op.set(Dd,DuP,1);
+            } else
+            if(opname == "S-1"){
+                Op.set(eu,edP,1);
+                Op.set(uu,udP,1);
+                Op.set(du,ddP,1);
+                Op.set(Du,DdP,1);
+            } else
+            if(opname == "S+0"){
+                Op.set(du,uuP,1);
+                Op.set(dd,udP,1);
+            } else
+            if(opname == "S-0"){
+                Op.set(uu,duP,1);
+                Op.set(ud,ddP,1);
+            } else
+            if(opname == "S20"){
+                Op.set(uu,uuP,0.75);
+                Op.set(du,duP,0.75);
 
-            Op.set(EmD,UpPD,1);
-            Op.set(DnD,UDPD,1);
+                Op.set(ud,udP,0.75);
+                Op.set(dd,ddP,0.75);
             }
-        else
-        if(opname == "Cdn")
-            {
-            Op.set(DnU,euP,1);
-            Op.set(UDU,UpPU,-1);
+            else
+                {
+                Error("Operator \"" + opname + "\" name not recognized");
+                }
 
-            Op.set(DnD,EmPD,1);
-            Op.set(UDD,UpPD,-1);
-            }
-        else
-        if(opname == "Cdagdn")
-            {
-            Op.set(eu,DnPU,1);
-            Op.set(UpU,UDPU,-1);
-
-            Op.set(EmD,DnPD,1);
-            Op.set(UpD,UDPD,-1);
-            }
-        else
-        if(opname == "Aup")
-            {
-            Op.set(UpU,euP,1);
-            Op.set(UDU,DnPU,1);
-
-            Op.set(UpD,EmPD,1);
-            Op.set(UDD,DnPD,1);
-            }
-        else
-        if(opname == "Adagup")
-            {
-            Op.set(eu,UpPU,1);
-            Op.set(DnU,UDPU,1);
-
-            Op.set(EmD,UpPD,1);
-            Op.set(DnD,UDPD,1);
-            }
-        else
-        if(opname == "Adn")
-            {
-            Op.set(DnU,euP,1);
-            Op.set(UDU,UpPU,1);
-
-            Op.set(DnD,EmPD,1);
-            Op.set(UDD,UpPD,1);
-            }
-        else
-        if(opname == "Adagdn")
-            {
-            Op.set(eu,DnPU,1);
-            Op.set(UpU,UDPU,1);
-
-            Op.set(EmD,DnPD,1);
-            Op.set(UpD,UDPD,1);
-            }
-        else
-        if(opname == "FermiPhase" || opname == "F")
-            {
-            Op.set(eu,euP,+1);
-            Op.set(UpU,UpPU,-1);
-            Op.set(DnU,DnPU,-1);
-            Op.set(UDU,UDPU,+1);
-
-            Op.set(EmD,EmPD,+1);
-            Op.set(UpD,UpPD,-1);
-            Op.set(DnD,DnPD,-1);
-            Op.set(UDD,UDPD,+1);
-            }
-        else
-        if(opname == "Fup")
-            {
-            Op.set(eu,euP,+1);
-            Op.set(UpU,UpPU,-1);
-            Op.set(DnU,DnPU,+1);
-            Op.set(UDU,UDPU,-1);
-
-            Op.set(EmD,EmPD,+1);
-            Op.set(UpD,UpPD,-1);
-            Op.set(DnD,DnPD,+1);
-            Op.set(UDD,UDPD,-1);
-            }
-        else
-        if(opname == "Fdn")
-            {
-            Op.set(eu,euP,+1);
-            Op.set(UpU,UpPU,+1);
-            Op.set(DnU,DnPU,-1);
-            Op.set(UDU,UDPU,-1);
-
-            Op.set(EmD,EmPD,+1);
-            Op.set(UpD,UpPD,+1);
-            Op.set(DnD,DnPD,-1);
-            Op.set(UDD,UDPD,-1);
-            }
-        else
-        if(opname == "Sz0")
-            {
-            Op.set(UpU,UpPU,+0.5);
-            Op.set(DnU,DnPU,-0.5);
-
-            Op.set(UpD,UpPD,+0.5);
-            Op.set(DnD,DnPD,-0.5);
-            }
-        else
-        if(opname == "Sz1")
-        {
-            Op.set(eu,euP,+0.5);
-            Op.set(UpU,UpPU,+0.5);
-            Op.set(DnU,DnPU,+0.5);
-            Op.set(UDU,UDPU,+0.5);
-
-            Op.set(EmD,EmPD,-0.5);
-            Op.set(UpD,UpPD,-0.5);
-            Op.set(DnD,DnPD,-0.5);
-            Op.set(UDD,UDPD,-0.5);
-        }
-        else
-        if(opname == "S01")
-        {
-            Op.set(UpU,UpPU,+0.25);
-            Op.set(DnU,DnPU,-0.25);
-            Op.set(UpD,UpPD,-0.25);
-            Op.set(DnD,DnPD,+0.25);
-
-            Op.set(UpD,DnPU,0.5);
-            Op.set(DnU,UpPD,0.5);
-        }
-        else
-        if(opname == "S+1")
-        {
-            Op.set(EmD,euP,1);
-            Op.set(UpD,UpPU,1);
-            Op.set(DnD,DnPU,1);
-            Op.set(UDD,UDPU,1);
-        }
-        else
-        if(opname == "S-1")
-        {
-            Op.set(eu,EmPD,1);
-            Op.set(UpU,UpPD,1);
-            Op.set(DnU,DnPD,1);
-            Op.set(UDU,UDPD,1);
-        }
-        else
-        if(opname == "S+0")
-            {
-            Op.set(DnU,UpPU,1);
-            Op.set(DnD,UpPD,1);
-            }
-        else
-        if(opname == "S-0")
-            {
-            Op.set(UpU,DnPU,1);
-
-            Op.set(UpD,DnPD,1);
-            }
-        else
-        if(opname == "S20")
-            {
-            //S dot S on-site
-            Op.set(UpU,UpPU,0.75);
-            Op.set(DnU,DnPU,0.75);
-
-            Op.set(UpD,UpPD,0.75);
-            Op.set(DnD,DnPD,0.75);
-            }
-        else
-            {
-            Error("Operator \"" + opname + "\" name not recognized");
-            }
-
-        return Op;
+            return Op;
         }
 
-    KHSite(int n, Args const& args = Args::global())
+        KHSite(int n, Args const& args = Args::global())
         {
-        *this = KHSite({args,"SiteNumber=",n});
+            *this = KHSite({args,"SiteNumber=",n});
         }
 
     };
