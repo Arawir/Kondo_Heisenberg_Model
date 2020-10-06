@@ -86,10 +86,11 @@ int main(int argc, char *argv[])
     };
 
 
+    Params.add("W","double","2.1");
     Params.add("thop","double","0.5");
-    Params.add("U","double","2.1");
-    Params.add("Jh","double","0.0");
-    Params.add("K","double","0.042857143");
+    Params.add("U","double","1*W");
+    Params.add("Jh","double","-2*0.25*U");
+    Params.add("K","double","4*0.15*0.15/U");
 
     Params.add("Mu","double","0.0");
 
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
     Params.add("maxtime","double","196.0");
     Params.add("dtime","double","0.1");
 
-    Params.add("exp","string","timeEv");
+    Params.add("exp","string","timeEvGs");
 
     Params.add("PBSenable","bool","0");
     Params.add("PBSjobid","int","0");

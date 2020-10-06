@@ -47,23 +47,6 @@ inline std::string getS(std::string data)
     return Args::global().getString(data);
 }
 
-
-struct mstring : public std::string{
-
-    mstring(const char *str) :
-        std::string{str}
-    {
-
-    }
-};
-
-double operator+(mstring a, double b){
-    return getD(a)+b;
-}
-double operator+(double a, mstring b){
-    return getD(b)+a;
-}
-
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer;
     std::string result;
