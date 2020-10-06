@@ -113,7 +113,7 @@ class KHSite
                 Op.set(dd,ddP,1);
                 Op.set(Dd,DdP,1);
             } else
-            if(opname == "Nudn")
+            if(opname == "Nupdn")
                 {
                 Op.set(Du,DuP,1);
                 Op.set(Dd,DdP,1);

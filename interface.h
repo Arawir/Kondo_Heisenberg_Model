@@ -203,8 +203,8 @@ public:
         for(int i=1; i<argc; i++){
             set(argv[i]);
         }
-        addArgs();
         relaclulate();
+        addArgs();
         write();
     }
 
@@ -241,7 +241,7 @@ private:
         param.isCalculating = true;
 
         if(!param.isReady){
-            if(isFormula(param.formula)){
+            if((isFormula(param.formula))&&(param.type!="string")){
                 std::vector<std::string> elems = separateFormula(param.formula);
                 double val = getVal(elems[0]);
 
