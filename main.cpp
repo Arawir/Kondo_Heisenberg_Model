@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
         ExpCon.setSites(sites);ExpCon("E") = H;
 
         auto ampo = AutoMPO(sites);
-        ampo += 1,"S+0",getI("L")/2;
-        ampo += 1,"S+1",getI("L")/2;
+        ampo += 1,"S+0",(getI("L")+1)/2;
+        ampo += 1,"S+1",(getI("L")+1)/2;
         MPO OpSpinPlus = toMPO(ampo);
 
         ExpCon.addPoint("Starting DMRG");
