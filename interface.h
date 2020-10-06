@@ -12,6 +12,7 @@
 #include <string>
 #include <array>
 
+#define assertm(exp, msg) assert(((void)msg, exp))
 using namespace itensor;
 
 //////SET THIS////////////////////
@@ -119,11 +120,53 @@ protected:
 
 };
 /////////////////////////////
+
+bool isFormula(std::string text){
+    auto posPlus = text.find("+");
+    if(posPlus!=std::string::npos){
+        if(posPlus!=0){
+            if( (text[posPlus-1]!='E')||(text[posPlus-1]!='e')){
+               return true;
+            }
+        }
+    }
+
+    auto posMinus = text.find("-");
+    if(posMinus!=std::string::npos){
+        if(posMinus!=0){
+            if( (text[posMinus-1]!='E')&&(text[posMinus-1]!='e')){
+                return true;
+            }
+        }
+    }
+
+    if(text.find("*")!=std::string::npos) return true;
+    if(text.find("/")!=std::string::npos) return true;
+    return false;
+}
+
+std::vector<std::string> separateFormula(std::string formula){
+    std::vector<std::string> out;
+    out.push_back("");
+    out.back() += formula[0];
+    for(int i=1; i<formula.length();i++){
+        if((formula[i]=='+')&&(formula[i-1]!='E')){ out.push_back("+"); out.push_back(""); }
+        else if((formula[i]=='-')&&(formula[i-1]!='E')){ out.push_back("-"); out.push_back(""); }
+        else if(formula[i]=='*'){ out.push_back("*"); out.push_back(""); }
+        else if(formula[i]=='/'){ out.push_back("/"); out.push_back(""); }
+        else{ out.back() += formula[i]; }
+    }
+    return out;
+}
+
 struct Param{
     std::string name;
     std::string type;
+    std::string formula;
     std::string value;
     bool wasSet=false;
+    bool isReady = false;
+    bool isCalculating = false;
 
     int getInt(){
         if(type!="int"){
@@ -161,6 +204,7 @@ public:
             set(argv[i]);
         }
         addArgs();
+        relaclulate();
         write();
     }
 
@@ -178,16 +222,56 @@ public:
         std::cout << "---------------------------- System parameters ---------------------------" << std::endl;
         for(auto& param : objects){
             std::cout << "  " << param->name << " -> ";
-            std::cout << "  " << param->value << " ";
+            std::cout << "  " << param->formula << " ";
             if(!param->wasSet){ std::cout << "(default)"; }
+            std::cout << " -> " << param->value;
             std::cout << std::endl;
         }
     }
 
+    void relaclulate(){
+        for(auto &param : objects){
+            relalculateParamIfPossible( *param );
+        }
+    }
+
 private:
+    void relalculateParamIfPossible(Param &param){
+        assertm(param.isCalculating==false, "ERROR: Param loop!");
+        param.isCalculating = true;
+
+        if(!param.isReady){
+            if(isFormula(param.formula)){
+                std::vector<std::string> elems = separateFormula(param.formula);
+                double val = getVal(elems[0]);
+
+                for(int i=1; i<elems.size()-1;i+=2){
+                    if(elems[i]=="+") val += getVal(elems[i+1]);
+                    if(elems[i]=="-") val -= getVal(elems[i+1]);
+                    if(elems[i]=="*") val *= getVal(elems[i+1]);
+                    if(elems[i]=="/") val /= getVal(elems[i+1]);
+                }
+                param.value = std::to_string(val);
+            } else {
+                param.value=param.formula;
+            }
+            param.isReady = true;
+        }
+        param.isCalculating = false;
+    }
+
+    double getVal(std::string elem){
+        if(exists(elem)){
+            if(get(elem)->isReady==false) relalculateParamIfPossible( *get(elem) );
+            return get(elem)->getDouble();
+        } else {
+            return atof(elem.c_str());
+        }
+    }
+
     void set(std::string data){
         size_t pos = data.find("=");
-        get( data.substr(0,pos) )->value = data.substr(pos+1);
+        get( data.substr(0,pos) )->formula = data.substr(pos+1);
         get( data.substr(0,pos) )->wasSet = true;
     }
 

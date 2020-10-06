@@ -19,16 +19,14 @@ Sweeps prepareSweepClass()
     return sweeps;
 }
 
-MPO KHHamiltonian(KH &sites,
+MPO KHHamiltonian(SiteSetType &sites,
                   int L, double thop, double K, double Jh, double Mu, double U)
 {
     auto ampo = AutoMPO(sites);
     for(int j=1; j<L; j++){
         ampo += +thop,"Cdagup",j,"Cup",j+1;
-       // ampo += +thop,"Cdagup",j+1,"Cup",j;
         ampo += -thop,"Cup",j,"Cdagup",j+1;
         ampo += +thop,"Cdagdn",j,"Cdn",j+1;
-       // ampo += +thop,"Cdagdn",j+1,"Cdn",j;
         ampo += -thop,"Cdn",j,"Cdagdn",j+1;
 
         ampo += K/2,"S+1",j,"S-1",j+1;
@@ -38,10 +36,8 @@ MPO KHHamiltonian(KH &sites,
 
     if(Args::global().getBool("PBC")){
         ampo += +thop,"Cdagup",L,"Cup",1;
-       // ampo += +thop,"Cdagup",1,"Cup",L;
         ampo += -thop,"Cup",L,"Cdagup",1;
         ampo += +thop,"Cdagdn",L,"Cdn",1;
-       // ampo += +thop,"Cdagdn",1,"Cdn",L;
         ampo += -thop,"Cdn",L,"Cdagdn",1;
 
         ampo += K/2,"S+1",L,"S-1",1;
@@ -59,7 +55,7 @@ MPO KHHamiltonian(KH &sites,
 
 void prepareObservables()
 {
-    ExpCon("N") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("N") = [](const SiteSetType &sites){
         auto N = AutoMPO(sites);
         for(int i=1; i<=getI("L"); i++){
             N += 1,"Ntot",i;
@@ -68,7 +64,7 @@ void prepareObservables()
         return toMPO(N);
     };
 
-    ExpCon("Nd") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Nd") = [](const SiteSetType &sites){
         auto N = AutoMPO(sites);
 
         for(int i=1; i<=getI("L"); i++){
@@ -79,7 +75,7 @@ void prepareObservables()
         return toMPO(N);
     };
 
-    ExpCon("Sz0") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Sz0") = [](const SiteSetType &sites){
         auto N = AutoMPO(sites);
 
         for(int i=1; i<=getI("L"); i++){
@@ -89,7 +85,7 @@ void prepareObservables()
         return toMPO(N);
     };
 
-    ExpCon("Sz1") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Sz1") = [](const SiteSetType &sites){
         auto N = AutoMPO(sites);
 
         for(int i=1; i<=getI("L"); i++){
@@ -99,7 +95,7 @@ void prepareObservables()
         return toMPO(N);
     };
 
-    ExpCon("Szt") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Szt") = [](const SiteSetType &sites){
         auto N = AutoMPO(sites);
 
         for(int i=1; i<=getI("L"); i++){
@@ -109,7 +105,7 @@ void prepareObservables()
 
         return toMPO(N);
     };
-    ExpCon("Sz1_1:L") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Sz1_1:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 
         for(int i=1; i<=sites.length(); i++){
@@ -120,7 +116,7 @@ void prepareObservables()
 
         return out;
     };
-    ExpCon("Sz0_1:L") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Sz0_1:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 
         for(int i=1; i<=sites.length(); i++){
@@ -131,7 +127,7 @@ void prepareObservables()
 
         return out;
     };
-    ExpCon("N1:L") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("N1:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 
         for(int i=1; i<=sites.length(); i++){
@@ -142,7 +138,7 @@ void prepareObservables()
 
         return out;
     };
-    ExpCon("Nd1:L") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("Nd1:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 
         for(int i=1; i<=sites.length(); i++){
@@ -153,7 +149,7 @@ void prepareObservables()
 
         return out;
     };
-    ExpCon("N21:L") = [](const BasicSiteSet<KHSite> &sites){
+    ExpCon("N21:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 
         for(int i=1; i<=sites.length(); i++){
@@ -167,7 +163,7 @@ void prepareObservables()
     };
 }
 
-std::tuple<KH,MPS,MPO,Sweeps> prepareExpBasic()
+std::tuple<SiteSetType,MPS,MPO,Sweeps> prepareExpBasic()
 {
     seedRNG(1);
     auto sites = KH( getI("L") );
@@ -178,7 +174,7 @@ std::tuple<KH,MPS,MPO,Sweeps> prepareExpBasic()
     return std::make_tuple( sites,psi,H,sweeps );
 }
 
-double calculateCorrelation(const BasicSiteSet<KHSite> &sites, const MPS &psi, int i, int j, std::string type)
+double calculateCorrelation(const SiteSetType &sites, const MPS &psi, int i, int j, std::string type)
 {
     auto Si = AutoMPO(sites);
     auto Sj = AutoMPO(sites);
@@ -211,7 +207,7 @@ double calculateCorrelation(const BasicSiteSet<KHSite> &sites, const MPS &psi, i
     return inner(psi,SiSj,psi);
 }
 
-void calculateCorrelationMatrixSz(const BasicSiteSet<KHSite> &sites, const MPS &psi, std::string type)
+void calculateCorrelationMatrixSz(const SiteSetType &sites, const MPS &psi, std::string type)
 {
     int L = Args::global().getInt("L");
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.5.1, 2020-09-28T21:33:05. -->
+<!-- Written by QtCreator 3.5.1, 2020-10-06T10:03:37. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -157,7 +157,7 @@
      <value type="int">14</value>
     </valuelist>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguation.Title">KondoHeisenberg</value>
-    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments">exp=Dmrg L=8</value>
+    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments">exp=0 U=1 K=2*U</value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory"></value>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
