@@ -27,7 +27,30 @@ int main(int argc, char *argv[])
         dmrg(psi,H,sweeps);
 
         ExpCon.addPoint("Output data");
-        ExpCon.calc(psi,oMode::b,"E","N","Nd","Sz0","Sz1","Szt","dim");
+        ExpCon.calc(psi,oMode::b,"mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+    };
+
+    Experiments("DmrgWithApplyingS") = [](){
+        auto [sites,psi,H,sweeps] = prepareExpBasic();
+        ExpCon.setSites(sites);ExpCon("E") = H;
+
+        auto ampo = AutoMPO(sites);
+        ampo += 1,"S+0",(getI("L")+1)/2;
+        ampo += 1,"S+1",(getI("L")+1)/2;
+        MPO OpSpinPlus = toMPO(ampo);
+
+        ExpCon.addPoint("Starting DMRG");
+        dmrg(psi,H,sweeps);
+        ExpCon.calc(psi,oMode::b,"rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+
+        ExpCon.addPoint("Apply OpSpinPlus");
+        auto psi2 = removeQNs(psi);
+        auto psi3 = applyMPO(OpSpinPlus,psi2,{"Method=","DensityMatrix","MaxDim=",getI("maxDim"),"Cutoff=",getD("cutoff"),"Normalize=",true});
+        ExpCon.calc(psi3,oMode::b,"rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+
+        ExpCon.addPoint("NoPrime");
+        psi3.noPrime();
+        ExpCon.calc(psi3,oMode::b,"rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
     };
 
     Experiments("DmrgWithCorrelations") = [](){
@@ -110,7 +133,7 @@ int main(int argc, char *argv[])
     Params.add("maxtime","double","196.0");
     Params.add("dtime","double","0.1");
 
-    Params.add("exp","string","timeEvGs");
+    Params.add("exp","string","DmrgWithApplyingS");
 
     Params.add("PBSenable","bool","0");
     Params.add("PBSjobid","int","0");
