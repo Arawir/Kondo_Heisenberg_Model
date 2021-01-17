@@ -33,25 +33,26 @@ int main(int argc, char *argv[])
     Experiments("DmrgWithApplyingS") = [](){
         auto [sites,psi,H,sweeps] = prepareExpBasic();
         ExpCon.setSites(sites);ExpCon("E") = H;
-
-        auto ampo = AutoMPO(sites);
-        ampo += 1,"S+0",(getI("L")+1)/2;
-        ampo += 1,"S+1",(getI("L")+1)/2;
-        MPO OpSpinPlus = toMPO(ampo);
+        ExpCon.calc(psi,oMode::b,"App_S+","rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
 
         ExpCon.addPoint("Starting DMRG");
         dmrg(psi,H,sweeps);
         ExpCon.calc(psi,oMode::b,"DMRG","rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
 
-        ExpCon.addPoint("Apply OpSpinPlus");
-        auto psi2 = removeQNs(psi);
-        auto psi3 = applyMPO(OpSpinPlus,psi2,{"Method=","DensityMatrix","MaxDim=",getI("maxDim"),"Cutoff=",getD("cutoff"),"Normalize=",true});
-        ExpCon.calc(psi3,oMode::b,"App_S+","rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+                auto ampo = AutoMPO(sites);
+                ampo += 1.0,"S+0",3;
+                auto S =  toMPO(ampo);
 
-        ExpCon.addPoint("NoPrime");
-        psi3.noPrime();
-        ExpCon.calc(psi3,oMode::b,"NoPrime","rtime","mem","dim","E","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+
+        ExpCon.addPoint("Apply OpSpinPlus");
+                auto psi2 = applyMPO(S,psi);
+               // auto newA = noPrime( op(sites,"S+0",3)*psi(3) );
+               // newA = noPrime( op(sites,"S+1",3)*newA );
+               // psi.set(3,newA);
+                psi2.noPrime();
+        ExpCon.calc(psi2,oMode::b,"App_S+","rtime","mem","dim","N","Nd","Sz0","Sz1","Szt","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
     };
+
 
     Experiments("DmrgWithCorrelations") = [](){
         auto [sites,psi,H,sweeps] = prepareExpBasic();
@@ -94,17 +95,23 @@ int main(int argc, char *argv[])
 
         ExpCon.addPoint("Starting DMRG");
         dmrg(psi,H,sweeps);
-        ExpCon.calc(psi,oMode::b,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
+        ExpCon.calc(psi,oMode::b,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","SzSz_L/2:L","N1:L","Nd1:L");
 
         ExpCon.addPoint("Apply OpSpinPlus");
         auto psi2 = removeQNs(psi);
-        auto psi3 = applyMPO(OpSpinPlus,psi2,{"Method=","DensityMatrix","MaxDim=",100,"Cutoff=",1E-13,"Normalize=",true});
+        auto psi3 = applyMPO(OpSpinPlus,psi2,{"Method=","DensityMatrix","MaxDim=",getI("maxDim"),"Cutoff=",1E-13,"Normalize=",true});
         psi3.noPrime();
+
+        auto sweepTDVP = Sweeps(Args::global().getInt("sweepsTDVP"));
+        sweepTDVP.maxdim() = Args::global().getInt("maxDim");
+        sweepTDVP.mindim() = Args::global().getInt("minDim");
+        sweepTDVP.cutoff() = Args::global().getReal("cutoffTDVP");
+        sweepTDVP.niter() = Args::global().getReal("niter");
 
         ExpCon.addPoint("Starting TDVP");
         for(double time=0; time<=getD("maxtime")+getD("dtime")+0.001; time+=getD("dtime")){
-            ExpCon.calc(psi3,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","N1:L","Nd1:L");
-            tdvpStepWithBasisExtensionIfNeeded(psi3,H,getD("dtime"),sweeps);
+            ExpCon.calc(psi3,oMode::b,"t:",time,"rtime","mem","E","N","Nd","Sz0","Sz1","Szt","dim","Sz1_1:L","Sz0_1:L","SzSz_L/2:L","N1:L","Nd1:L");
+            tdvpStepWithBasisExtensionIfNeeded(psi3,H,getD("dtime"),sweepTDVP);
         }
     };
 
@@ -123,10 +130,12 @@ int main(int argc, char *argv[])
     Params.add("Silent","bool","1");
     Params.add("cutoff","double","1E-8");
     Params.add("sweeps","int","4");
+    Params.add("cutoffTDVP","double","1E-8");
+    Params.add("sweepsTDVP","int","1");
     Params.add("minDim","int","1");
     Params.add("maxDim","int","100");
     Params.add("niter","int","30");
-    Params.add("state","string","L/2*uu-L/2*dd");
+    Params.add("state","string","uu-dd");
 
     Params.add("ConserveN","bool","1");
     Params.add("ConserveSz","bool","0");

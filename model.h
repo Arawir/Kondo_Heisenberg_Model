@@ -127,6 +127,23 @@ void prepareObservables()
 
         return out;
     };
+    ExpCon("SzSz_L/2:L") = [](const SiteSetType &sites){
+        std::vector<MPO> out;
+        int L = sites.length();
+
+        for(int i=1; i<=sites.length(); i++){
+            auto Si = AutoMPO(sites);
+            auto Sj = AutoMPO(sites);
+            Si += 1,"Sz0",L/2;
+            Si += 1,"Sz1",L/2;
+            Sj += 1,"Sz0",i;
+            Sj += 1,"Sz1",i;
+
+            out.push_back( nmultMPO(toMPO(Si),prime(toMPO(Sj))) );
+        }
+
+        return out;
+    };
     ExpCon("N1:L") = [](const SiteSetType &sites){
         std::vector<MPO> out;
 

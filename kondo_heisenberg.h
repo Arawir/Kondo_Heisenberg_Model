@@ -258,6 +258,15 @@ class KHSite
                 Op.set(ud,duP,0.5);
                 Op.set(du,udP,0.5);
             } else
+            if(opname == "S+01")
+            {
+                Op.set(ed,euP,1);
+                Op.set(ud,uuP,1);
+                Op.set(dd,duP,1);
+                Op.set(Dd,DuP,1);
+                Op.set(du,uuP,1);
+                Op.set(dd,udP,1);
+            } else
             if(opname == "S+1")
             {
                 Op.set(ed,euP,1);
